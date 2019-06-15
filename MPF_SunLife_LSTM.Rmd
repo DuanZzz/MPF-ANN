@@ -1,0 +1,530 @@
+---
+title: "SunLife MPF Investment Strategy and Backtesting (Preliminary Trial)"
+output: 
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+### FOR YOUR LEISURE AND INFORMATION ONLY. I WON'T RESPONSIBLE FOR ANY LOSS FOR USING THIS STRATEGY.   
+
+## WARNING: Please read the notification in this section first:   
+This script uses artifical neural network (ANN) model for MPF fund allocation.   
+However, ANN is stochastic in nature. It produces different results based on the pseudo-random seed (system time).   
+In our example, we manually set the random seed as 42 for simplicity.   
+However, in real application, the script shall execute >30 times in order to generate trustworthy statistics for better prediction.   
+
+In addition, the prediction have no additional validation, because the return from the portfolio is kind of walk-forward validation.   
+If the model is poor, then the return shall be poor.   
+
+In our script, we determined 0.0013 as the initial learning rate. We listed top 4 learning rate here for your information.   
+
+| Learning rate     | Return   | Sharpe Ratio |   
+| ----------------- | -------- | ------------ |   
+| 0.0013            | 0.08296  | 0.07129      |   
+| 0.0002            | 0.08398  | 0.07127      |   
+| 0.0005            | 0.08139  | 0.07114      |   
+| 0.0012            | 0.08262  | 0.07095      |   
+
+
+### Introduction
+Mandatory Provident Fund (MPF) is one of the legal pensions in Hong Kong.  
+Employees and Employers are required to pay at least 5% of monthly salary to MPF services provider.  
+MPF providers are required to provide designated funds for employees to invest, 
+while the team could earn management fees.  
+
+However, the average annualized return of MPF is 3.1% only in from 2000-2016 (Mandatory Provident Fund Schemes Authority, 2016).  
+Hence most Hongkong employees feels they are forced to give their salary to fund manager.  
+Indeed, the reasons of low return may due to inactive management by employees.  
+In this example, we will explore artifical neural network to rise the annualized return.  
+
+### SunLife MPF Portfolio Generation using Artifical Neural Network (ANN) Relative Strength Index   
+
+Artifical Neural Network is a stochastic black-box model. It receives input and output the result by neurons.   
+Formal definition could be searched on internet.   
+To support our application, we will uses VIX values and Relative Strength Index (RSI) to refine our prices.   
+VIX shows the significant volality in the market;
+While the RSI shows whether a stock/fund overbuy (or oversell) hence overpriced (or underpriced).  
+
+In our example, we directly uses Bidirectional Long-Short Term Memory to train and predict the future price of MPF constitute fund prices.  
+The fund would be finalized by applying penalty based on the result of RSI and VIX.
+
+### When to manage?
+
+In this example, we are going to collect daily price for all MPF fund in last day of a month.  
+Then, we are going to convert or reallocate the assets at the same time.  
+Notice that it is impossible since MPF price are uploaded 1 business day, also reallocation need at lest 2 business day to achieve.  
+
+### Results
+
+Using Top 2 Performers in n-m MA BIAS:  
+
+Percentage on n-m MA BIAS: 100%   
+
+Annualized Return: ~10.32% (after deducting fees)  
+Mean Annualized Return: ~11.41% (after deducting fees)   
+Annualized Standard Deviation: 10.60% (StdDev(monthly return) * sqrt(12))   
+Sharpe Ratio: 10.58%/11.41% = 0.9988  
+Sortino Ratio: 0.5399 (MAR = 0%)  
+Expected Shortfall: 5.87% loss (0% Risk-free rate, 95% C.I.)  
+
+--------------------------------------------------------------------------------
+
+Benchmark: 50-50 as described in the book written by Mr. Leung   
+(before deducting cost?)   
+Mean Annualized Return: 10.33%   
+Annualized Standard Deviation: 12.85% (StdDev(monthly return) * sqrt(12))   
+Sharpe Ratio: 10.33%/12.85% = 0.8039   
+
+## Recommended Parameters
+
+| Variable     | Val.     | Explanation                               |
+| ------------ | -------- | ----------------------------------------- |
+| top          | 2        | Top n Performer                           |
+| RSI_Overbuy  | 0.85     | RSI indicator (%)                         |
+| nm           | 1        | n-m in NMMA BIAS                          |
+| MA_long      | 6        | Longer MA in NMMA BIAS (months)           |
+| MA_short     | 2        | Shorter MA in NMMA BIAS (months)          |
+| RSI_Period   | 18       | MA period for RSI (months)                |
+| Min_NMMA     | 0.001    | Minimum Monthly Return to be consider     |   
+
+
+## Detailed Workflow
+
+### Package Preparation
+
+1. Install necessary packages
+```{r warning=FALSE, results="hide"}
+r = getOption("repos")
+r["CRAN"] = "https://mran.revolutionanalytics.com/snapshot/2019-03-01"
+options(repos = r)
+
+install.packages("zoo")
+install.packages("xts")
+install.packages("fBasics")
+install.packages("quantmod")
+install.packages("PerformanceAnalytics")
+```
+
+2. Now load necessary packages.
+```{r warning=FALSE, results="hide"}
+library("zoo")
+library("xts")
+library("fBasics")
+library("quantmod")
+library("PerformanceAnalytics")
+library("keras")
+
+```
+
+### Load Prices and Calculate Return
+
+0. Parameters
+```{r warning=FALSE}
+nmBIAS_Percent <- 1
+
+top <- 2
+RSI_Overbuy <- 0.85
+RSI_Period <- 18 
+Min_NMMA <- 1e-6
+
+
+```
+
+1. Load the price into zoo format
+```{r warning=FALSE}
+setwd("~")
+MPF.SunLife <- as.xts(read.zoo("../OneDrive/MPF/Sun Life Rainbow/SunLife.csv", format="%Y/%m/%d", header=TRUE, read = read.csv, na.strings="0"))
+
+
+daily <- index(MPF.SunLife)
+
+MPF.SunLife.cost <- c(0.0201, 0.0187, 0.0085, 0.0206, 0.0112, 0.0183, 0.0202, 0.0204, 0.0180, 0.0177, 0, 0.0085) / 12
+MPF.SunLife.dailyCost <- c(0.0201, 0.0187, 0.0085, 0.0206, 0.0112, 0.0183, 0.0202, 0.0204, 0.0180, 0.0177, 0, 0.0085) / 12 / 21
+
+```
+
+
+
+2. Calculate Relative Strength Index (RSI)
+```{r include=FALSE, results=FALSE}
+#MPF.SunLife.RSI <- na.fill(lag(apply(MPF.SunLife, 2, function(x) RSI(x, n=21*18)),k=21*3),0)
+MPF.SunLife.RSI <- na.fill(apply(MPF.SunLife, 2, function(x) RSI(x, n=21*RSI_Period)),0)
+MPF.SunLife.RSI <- as.xts(MPF.SunLife.RSI, order.by = daily)
+
+```
+
+
+3. Calculate Returns
+```{r warning=FALSE}
+MPF.SunLife.AE <- monthlyReturn(as.xts(MPF.SunLife$AE), type="log")
+MPF.SunLife.B <- monthlyReturn(as.xts(MPF.SunLife$B), type="log")
+MPF.SunLife.CA <- monthlyReturn(as.xts(MPF.SunLife$CA), type="log")
+MPF.SunLife.CE <- monthlyReturn(as.xts(MPF.SunLife$CE), type="log")
+MPF.SunLife.HKT <- monthlyReturn(as.xts(MPF.SunLife$FTSE.HK), type="log")
+MPF.SunLife.G <- monthlyReturn(as.xts(MPF.SunLife$G), type="log")
+MPF.SunLife.GB <- monthlyReturn(as.xts(MPF.SunLife$GB), type="log")
+MPF.SunLife.GE <- monthlyReturn(as.xts(MPF.SunLife$GE), type="log")
+MPF.SunLife.HKB <- monthlyReturn(as.xts(MPF.SunLife$HKB), type="log")
+MPF.SunLife.HKE <- monthlyReturn(as.xts(MPF.SunLife$HKE), type="log")
+MPF.SunLife.MPFC <- monthlyReturn(as.xts(MPF.SunLife$MPFC), type="log")
+MPF.SunLife.SFP <- monthlyReturn(as.xts(MPF.SunLife$SFP), type="log")
+
+
+
+MPF.SunLife.returns <- merge(MPF.SunLife.AE, MPF.SunLife.B, MPF.SunLife.CA, MPF.SunLife.CE, MPF.SunLife.HKT, MPF.SunLife.G, MPF.SunLife.GB, MPF.SunLife.GE, MPF.SunLife.HKB, MPF.SunLife.HKE, MPF.SunLife.MPFC, MPF.SunLife.SFP)
+
+
+#for (col in 1:length(MPF.SunLife.returns[1,])) {
+#  MPF.SunLife.returns[,col] <- MPF.SunLife.returns[,col] - MPF.SunLife.cost[col]
+#}
+
+monthly <- index(MPF.SunLife.returns)
+
+colnames(MPF.SunLife.returns) <- c("AE", "B", "CA", "CE", "FTSE HK", "G", "GB", "GE", "HKB", "HKE", "MPFC", "SFP")
+
+rm(MPF.SunLife.AE, MPF.SunLife.B, MPF.SunLife.CA, MPF.SunLife.CE, MPF.SunLife.HKT, MPF.SunLife.G, MPF.SunLife.GB, MPF.SunLife.GE, MPF.SunLife.HKB, MPF.SunLife.HKE, MPF.SunLife.MPFC, MPF.SunLife.SFP)
+
+
+MPF.SunLife.AE <- dailyReturn(as.xts(MPF.SunLife$AE), type="log")
+MPF.SunLife.B <- dailyReturn(as.xts(MPF.SunLife$B), type="log")
+MPF.SunLife.CA <- dailyReturn(as.xts(MPF.SunLife$CA), type="log")
+MPF.SunLife.CE <- dailyReturn(as.xts(MPF.SunLife$CE), type="log")
+MPF.SunLife.HKT <- dailyReturn(as.xts(MPF.SunLife$FTSE.HK), type="log")
+MPF.SunLife.G <- dailyReturn(as.xts(MPF.SunLife$G), type="log")
+MPF.SunLife.GB <- dailyReturn(as.xts(MPF.SunLife$GB), type="log")
+MPF.SunLife.GE <- dailyReturn(as.xts(MPF.SunLife$GE), type="log")
+MPF.SunLife.HKB <- dailyReturn(as.xts(MPF.SunLife$HKB), type="log")
+MPF.SunLife.HKE <- dailyReturn(as.xts(MPF.SunLife$HKE), type="log")
+MPF.SunLife.MPFC <- dailyReturn(as.xts(MPF.SunLife$MPFC), type="log")
+MPF.SunLife.SFP <- dailyReturn(as.xts(MPF.SunLife$SFP), type="log")
+
+MPF.SunLife.dailyReturns <- merge(MPF.SunLife.AE, MPF.SunLife.B, MPF.SunLife.CA, MPF.SunLife.CE, MPF.SunLife.HKT, MPF.SunLife.G, MPF.SunLife.GB, MPF.SunLife.GE, MPF.SunLife.HKB, MPF.SunLife.HKE, MPF.SunLife.MPFC, MPF.SunLife.SFP)
+
+#for (col in 1:length(MPF.SunLife.returns[1,])) {
+#  MPF.SunLife.dailyReturns[,col] <- MPF.SunLife.dailyReturns[,col] - MPF.SunLife.dailyCost[col]
+#}
+
+colnames(MPF.SunLife.dailyReturns) <- c("AE", "B", "CA", "CE", "FTSE HK", "G", "GB", "GE", "HKB", "HKE", "MPFC", "SFP")
+
+rm(MPF.SunLife.AE, MPF.SunLife.B, MPF.SunLife.CA, MPF.SunLife.CE, MPF.SunLife.HKT, MPF.SunLife.G, MPF.SunLife.GB, MPF.SunLife.GE, MPF.SunLife.HKB, MPF.SunLife.HKE, MPF.SunLife.MPFC, MPF.SunLife.SFP)
+
+```
+
+### Calculate average RSI of the month, and then adjustment factor
+Adjustment factor = 1 - ECDF of RSI of that month
+New weight = old weight * (0.05 + adjustment factor)
+Finally normalize it to sum(row) = 1
+
+```{r warning=FALSE}
+MPF.SunLife.RSI.month <- as.xts(do.call(rbind, lapply(split(as.xts(MPF.SunLife.RSI), "months"), function(x) colAvgs(x))), order.by = monthly)
+
+MPF.SunLife.RSI.p <- MPF.SunLife.returns
+MPF.SunLife.RSI.p[,] <- 0
+
+for (col in 1:length(MPF.SunLife.RSI.month[1,])) {
+  if (col != 11) {
+    for (row in 1:length(MPF.SunLife.RSI.month[,col])) {
+      percentile <- ecdf(as.numeric(MPF.SunLife.RSI.month[1:row,col]))
+      if (percentile(MPF.SunLife.RSI.month[row,col]) >= (RSI_Overbuy - ((length(1:row)^(1/3))/(length(1:row)^(1/2))))) {
+        MPF.SunLife.RSI.p[row,col] <- 0.0001
+      } else {
+        MPF.SunLife.RSI.p[row,col] <- 1.0001-(percentile(MPF.SunLife.RSI.month[row,col])^2)
+      }
+    }
+        
+  } else {
+    MPF.SunLife.RSI.p[,col] <- 1
+  }
+}
+
+MPF.SunLife.RSI.sum <- as.xts(rowSums(MPF.SunLife.RSI.p), order.by = monthly)
+
+for (row in 1:length(MPF.SunLife.RSI.p[,col])) {
+  MPF.SunLife.RSI.p[row,] = apply(MPF.SunLife.RSI.p[row,], 2, function(x) (x/MPF.SunLife.RSI.sum[row,1])^(0.25))
+}
+MPF.SunLife.RSI.sum <- as.xts(rowSums(MPF.SunLife.RSI.p), order.by = monthly) 
+
+```
+
+### Train and predict with Long Short Term Memory (LSTM) model
+```{warning=FALSE, results="hide"}
+learning <- 0.0013
+n_steps <- 3
+
+use_condaenv("cntk")
+use_backend("cntk")
+
+use_session_with_seed(42, disable_parallel_cpu = FALSE)
+
+model <- keras_model_sequential()
+
+model %>%
+  bidirectional(layer_lstm(units = 7, return_sequences=TRUE, activation = 'relu', input_shape = c(n_steps,1))) %>%
+  bidirectional(layer_lstm(units = 7, return_sequences=TRUE, activation = 'relu')) %>%
+  bidirectional(layer_lstm(units = 7, activation = 'relu')) %>%
+  layer_dense(1)
+
+
+ad <- keras::optimizer_adam(lr = learning)
+
+model %>% compile(optimizer=ad, loss="mean_squared_error")
+
+
+col <- 1:length(MPF.SunLife.dailyReturns[1,])
+temp <- as.matrix(MPF.SunLife.returns)
+
+
+colNum <- 1:length(MPF.SunLife.returns[1,])
+
+matrix <- c()
+
+MPF.SunLife.w <- as.matrix(MPF.SunLife.returns)
+MPF.SunLife.period <- length(MPF.SunLife.w[,1])
+MPF.SunLife.w[,] <- 0
+
+
+for (col in colNum) {
+  X <- c()
+  y <- c()
+  
+  counter <- 0
+  minimum <- 6
+  
+  
+  
+  for (i in 1:(length(MPF.SunLife.returns[,col])-1)) {
+    end_ix <- i + n_steps - 1
+    if (end_ix > length(MPF.SunLife.returns[,col])-1) {
+      break
+    }
+    
+    if (is.na(temp[i,col])) {
+      next
+    }
+    seq_x <- temp[i:end_ix,col]
+    seq_y <- temp[end_ix+1,col]
+    
+    X <- append(X, seq_x)
+    y <- append(y, seq_y)
+    
+    counter <- counter + 1
+    
+  }
+  
+  predicted <- c()
+  range <- minimum:counter
+  len <- 1
+  
+  
+  
+  
+  for (i in range) {
+    
+    
+    X_train <- X[1:(i*n_steps)]
+    y_train <- y[1:i]
+    
+    dim(X_train) <- c(i, n_steps, 1)
+    
+    
+    model %>% fit(X_train, y_train, epochs=30)
+    
+    
+    input <- tail(X_train,n_steps)
+    dim(input) <- c(1,n_steps,1)
+    
+    return <- model %>% predict(input)
+    
+    
+    model %>% reset_states()
+    
+    predicted[len] <- return
+    len <- len+1
+    
+    
+    
+    
+  }
+  
+  
+  
+  result.length <- len - 1
+  
+  for (row in (MPF.SunLife.period - result.length+1) : (MPF.SunLife.period)) {
+    MPF.SunLife.w[row, col] <- predicted[(row + result.length - MPF.SunLife.period)]
+  }
+}
+
+
+keras::k_clear_session()
+```
+
+### Calculate the weight according to predicted return
+```{r warning=FALSE}
+
+
+#MPF.SunLife.w.cpy <- MPF.SunLife.w
+
+MPF.SunLife.w <- MPF.SunLife.w.cpy 
+
+VIX <- getSymbols("^VIX", auto.assign = FALSE, from="2000-12-01", to="2019-05-31")
+VIX[VIX>=35] <- 39.9
+VIX.month <- do.call(rbind, lapply(split(na.fill((1-(VIX/40)), 0), "months"), function(x) colAvgs(x)))
+
+
+
+MPF.portf.weight <- MPF.SunLife.returns
+MPF.portf.weight[,] <- NA
+colnames(MPF.portf.weight) <- c("AE", "B", "CA", "CE", "FTSE HK", "G", "GB", "GE", "HKB", "HKE", "MPFC", "SFP")
+
+MPF.SunLife.stock.return <- as.xts(rowSums(MPF.SunLife.RSI.month), order.by=monthly)
+MPF.SunLife.stock.return[] <- NA
+
+MPF.portf.return <- as.xts(rowSums(MPF.SunLife.RSI.month), order.by=monthly)
+MPF.portf.return[] <- NA
+
+hedge <- FALSE
+up <- TRUE
+
+
+
+round_percent <- function(x) { 
+  x <- x * 100
+  result <- floor(x)    # Find integer bits
+  remain <- x - result
+  rsum <- sum(result)   # Find out how much we are missing
+  i <- 1
+  if (rsum < 100) {
+    o <- order(remain, decreasing = TRUE)
+    while (rsum < 100) {
+      if (i > length(remain)) i <- 1
+      idx <- o[i]
+      if (result[idx] == 0) {
+        i <- i+1
+        next
+      }
+      result[idx] <- result[idx] + 1
+      rsum <- sum(result)
+      i <- i+1
+    }
+  } 
+  result <- result/100
+  return(result)    
+}
+
+
+MPF.SunLife.returns.mat <- as.matrix(MPF.SunLife.returns)
+
+for (row in 1:length(MPF.SunLife.w[,1])) {
+  
+  MPF.SunLife.stock.mean <- 0
+  i <- 0
+  
+  for (col in 1:length(MPF.SunLife.w[1,])) {
+    
+    MPF.SunLife.w[row,col] <- na.fill(lag(MPF.SunLife.w[row,col], 1) * MPF.SunLife.RSI.p[row,col], 0) * VIX.month[row,6]
+    
+    if (col != 7 && col != 9 && col != 11 && col != 12) {
+      
+      if (!is.na(MPF.SunLife.returns.mat[row,col])) {
+        MPF.SunLife.stock.mean <- MPF.SunLife.stock.mean + MPF.SunLife.returns.mat[row,col]
+        i <- i + 1
+      }
+      
+      if (MPF.SunLife.w[row,col] < Min_NMMA) {
+        MPF.SunLife.w[row,col] <- 0
+      }
+      
+      
+    }
+    
+
+    
+  }
+
+  
+  MPF.SunLife.stock.return[row] <- MPF.SunLife.stock.mean / i
+  
+    # Retain two most increasing fund
+  last <- length(MPF.SunLife.w[1,]) - top
+  order <- order(MPF.SunLife.w[row,])
+  for (col in order[1:last]) {
+    MPF.SunLife.w[row,col] <- 0
+  }
+
+  
+  
+  if (MPF.SunLife.stock.return[row] < 0 && MPF.SunLife.stock.return[row-3] < -0.004) {
+    up <- FALSE
+  }
+  
+  if (hedge == TRUE && MPF.SunLife.stock.return[row] > 0 && 
+      MPF.SunLife.stock.return[row-3] > -0.002) {
+    hedge <- FALSE
+    up <- TRUE
+  }
+  
+    
+    
+  
+  #MPF.SunLife.w <- as.xts(MPF.SunLife.w, order.by = monthly)
+  #MPF.SunLife.w <- na.fill(MPF.SunLife.w, 0)
+  MPF.SunLife.w.sum <- sum(MPF.SunLife.w[row,])
+  
+  MPF.SunLife.p <- as.matrix(MPF.SunLife.returns)
+  MPF.SunLife.p[,] <- 0
+  
+  # due to the composition of SunLife Fund are too active
+  # the NMMA BIAS are triggered too frequently
+  # See explanation before
+  
+  
+  if (MPF.SunLife.w.sum < 0.000025 || hedge == TRUE) {
+    MPF.SunLife.p[row,11] <- 1
+  } else {
+    MPF.SunLife.p[row,] <- MPF.SunLife.w[row,]/MPF.SunLife.w.sum
+  }
+  
+  
+  MPF.portf.weight[row,] <- round_percent(MPF.SunLife.p[row,]) 
+  portf.rebal.fm <- 
+    Return.portfolio(MPF.SunLife.returns, weight = MPF.portf.weight,geometric=TRUE,
+                     rebalance_on = "months")
+  
+  MPF.portf.return[row] <-
+    tail(na.omit(portf.rebal.fm), 1)
+  MPF.portf.drawdown <- Drawdowns(MPF.portf.return,
+                                  geometric = TRUE)
+  
+  if (tail(na.omit(MPF.portf.drawdown), 1) < -0.065 && up == FALSE) {
+    hedge = TRUE
+  }
+  
+}
+
+
+
+```
+
+### Performance Analysis
+```{r warning=FALSE}
+
+portf.rebal.fm <- Return.portfolio(MPF.SunLife.returns, weight = MPF.portf.weight, geometric=TRUE, rebalance_on = "months")
+mean.annual.return <- mean(do.call(rbind, lapply(split(portf.rebal.fm, "years"), function(x) colSums(x)))[2:17])
+
+charts.PerformanceSummary(portf.rebal.fm, methods= "ModifiedES", geometric=TRUE, p=.95, main="Sun Life Rainbow MPF Scheme Performance")
+portf.rebal.fm.sharpe <- Return.annualized(portf.rebal.fm, geometric=TRUE) / (StdDev(portf.rebal.fm) * sqrt(12))
+portf.rebal.fm.mean.sharpe <- mean.annual.return / (StdDev(portf.rebal.fm) * sqrt(12))
+rownames(portf.rebal.fm.sharpe) <- "Sharpe Ratio (annualized)"
+rownames(portf.rebal.fm.mean.sharpe) <- "Sharpe Ratio (mean annual return)"
+colnames(portf.rebal.fm.mean.sharpe) <- "portfolio.returns"
+Return.annualized(portf.rebal.fm, geometric=TRUE)
+mean.annual.return
+portf.rebal.fm.sharpe
+portf.rebal.fm.mean.sharpe
+StdDev.annualized(portf.rebal.fm)
+SortinoRatio(portf.rebal.fm)
+ES(portf.rebal.fm, method="historical")
+tail(MPF.portf.weight, n=1)
+```
