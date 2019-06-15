@@ -1717,17 +1717,23 @@ Notice that it is impossible since MPF price are uploaded 1 business day, also r
 <p>Using Top 2 Performers in n-m MA BIAS:</p>
 <p>Percentage on n-m MA BIAS: 100%</p>
 <p>Annualized Return: ~10.32% (after deducting fees)<br />
-Mean Annualized Return: ~11.41% (after deducting fees)<br />
-Annualized Standard Deviation: 10.60% (StdDev(monthly return) * sqrt(12))<br />
-Sharpe Ratio: 10.58%/11.41% = 0.9988<br />
-Sortino Ratio: 0.5399 (MAR = 0%)<br />
-Expected Shortfall: 5.87% loss (0% Risk-free rate, 95% C.I.)</p>
+Mean Annual Return: ~11.81% (after deducting fees)<br />
+Annualized Standard Deviation: 10.95% (StdDev(monthly return) * sqrt(12))<br />
+Sharpe Ratio (Mean annual return): 11.81%/10.95% = 1.079 <br />
+Sortino Ratio: 0.4739 (MAR = 0%)<br />
+Expected Shortfall: 6.68% loss (0% Risk-free rate, 95% C.I.)</p>
 <hr />
 <p>Benchmark: 50-50 as described in the book written by Mr. Leung<br />
 (before deducting cost?)<br />
-Mean Annualized Return: 10.33%<br />
+Mean Annual Return: 10.33%<br />
 Annualized Standard Deviation: 12.85% (StdDev(monthly return) * sqrt(12))<br />
 Sharpe Ratio: 10.33%/12.85% = 0.8039</p>
+
+<p>Benchmark: 10th strategy by Mr. Leung<br />
+(before deducting cost?)<br />
+Mean Annual Return: 13.75%<br />
+Annualized Standard Deviation: 13.34% (StdDev(monthly return) * sqrt(12))<br />
+Sharpe Ratio: 13.75%/13.34% = 1.031</p>
 </div>
 </div>
 <div id="recommended-parameters" class="section level2">
@@ -1809,10 +1815,10 @@ install.packages(&quot;zoo&quot;)</code></pre>
 <li>Now load necessary packages.</li>
 </ol>
 <pre class="r"><code>library(&quot;zoo&quot;)</code></pre>
-<pre><code>## 
+<pre><code>##
 ## Attaching package: &#39;zoo&#39;</code></pre>
 <pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
+##
 ##     as.Date, as.Date.numeric</code></pre>
 <pre class="r"><code>library(&quot;xts&quot;)</code></pre>
 <pre><code>## Registered S3 method overwritten by &#39;xts&#39;:
@@ -1821,17 +1827,17 @@ install.packages(&quot;zoo&quot;)</code></pre>
 <pre class="r"><code>library(&quot;fBasics&quot;)</code></pre>
 <pre><code>## Loading required package: timeDate</code></pre>
 <pre><code>## Loading required package: timeSeries</code></pre>
-<pre><code>## 
+<pre><code>##
 ## Attaching package: &#39;timeSeries&#39;</code></pre>
 <pre><code>## The following object is masked from &#39;package:zoo&#39;:
-## 
+##
 ##     time&lt;-</code></pre>
 <pre class="r"><code>library(&quot;quantmod&quot;)</code></pre>
 <pre><code>## Loading required package: TTR</code></pre>
-<pre><code>## 
+<pre><code>##
 ## Attaching package: &#39;TTR&#39;</code></pre>
 <pre><code>## The following object is masked from &#39;package:fBasics&#39;:
-## 
+##
 ##     volatility</code></pre>
 <pre><code>## Registered S3 method overwritten by &#39;quantmod&#39;:
 ##   method            from
@@ -1839,17 +1845,17 @@ install.packages(&quot;zoo&quot;)</code></pre>
 <pre><code>## Version 0.4-0 included new data defaults. See ?getSymbols.
 ## Learn from a quantmod author: https://www.datacamp.com/courses/importing-and-managing-financial-data-in-r</code></pre>
 <pre class="r"><code>library(&quot;PerformanceAnalytics&quot;)</code></pre>
-<pre><code>## 
+<pre><code>##
 ## Package PerformanceAnalytics (1.5.2) loaded.
 ## Copyright (c) 2004-2018 Peter Carl and Brian G. Peterson, GPL-2 | GPL-3
 ## https://github.com/braverock/PerformanceAnalytics</code></pre>
-<pre><code>## 
+<pre><code>##
 ## Attaching package: &#39;PerformanceAnalytics&#39;</code></pre>
 <pre><code>## The following objects are masked from &#39;package:timeDate&#39;:
-## 
+##
 ##     kurtosis, skewness</code></pre>
 <pre><code>## The following object is masked from &#39;package:graphics&#39;:
-## 
+##
 ##     legend</code></pre>
 <pre class="r"><code>library(&quot;keras&quot;)</code></pre>
 </div>
@@ -1862,7 +1868,7 @@ install.packages(&quot;zoo&quot;)</code></pre>
 
 top &lt;- 2
 RSI_Overbuy &lt;- 0.85
-RSI_Period &lt;- 18 
+RSI_Period &lt;- 18
 Min_NMMA &lt;- 1e-6</code></pre>
 <ol style="list-style-type: decimal">
 <li>Load the price into zoo format</li>
@@ -1949,7 +1955,7 @@ for (col in 1:length(MPF.SunLife.RSI.month[1,])) {
         MPF.SunLife.RSI.p[row,col] &lt;- 1.0001-(percentile(MPF.SunLife.RSI.month[row,col])^2)
       }
     }
-        
+
   } else {
     MPF.SunLife.RSI.p[,col] &lt;- 1
   }
@@ -2002,70 +2008,70 @@ MPF.SunLife.w[,] &lt;- 0
 for (col in colNum) {
   X &lt;- c()
   y &lt;- c()
-  
+
   counter &lt;- 0
   minimum &lt;- 6
-  
-  
-  
+
+
+
   for (i in 1:(length(MPF.SunLife.returns[,col])-1)) {
     end_ix &lt;- i + n_steps - 1
     if (end_ix &gt; length(MPF.SunLife.returns[,col])-1) {
       break
     }
-    
+
     if (is.na(temp[i,col])) {
       next
     }
     seq_x &lt;- temp[i:end_ix,col]
     seq_y &lt;- temp[end_ix+1,col]
-    
+
     X &lt;- append(X, seq_x)
     y &lt;- append(y, seq_y)
-    
+
     counter &lt;- counter + 1
-    
+
   }
-  
+
   predicted &lt;- c()
   range &lt;- minimum:counter
   len &lt;- 1
-  
-  
-  
-  
+
+
+
+
   for (i in range) {
-    
-    
+
+
     X_train &lt;- X[1:(i*n_steps)]
     y_train &lt;- y[1:i]
-    
+
     dim(X_train) &lt;- c(i, n_steps, 1)
-    
-    
+
+
     model %&gt;% fit(X_train, y_train, epochs=30)
-    
-    
+
+
     input &lt;- tail(X_train,n_steps)
     dim(input) &lt;- c(1,n_steps,1)
-    
+
     return &lt;- model %&gt;% predict(input)
-    
-    
+
+
     model %&gt;% reset_states()
-    
+
     predicted[len] &lt;- return
     len &lt;- len+1
-    
-    
-    
-    
+
+
+
+
   }
-  
-  
-  
+
+
+
   result.length &lt;- len - 1
-  
+
   for (row in (MPF.SunLife.period - result.length+1) : (MPF.SunLife.period)) {
     MPF.SunLife.w[row, col] &lt;- predicted[(row + result.length - MPF.SunLife.period)]
   }
@@ -2078,7 +2084,7 @@ keras::k_clear_session()</code></pre>
 <h3>Calculate the weight according to predicted return</h3>
 <pre class="r"><code>#MPF.SunLife.w.cpy &lt;- MPF.SunLife.w
 
-MPF.SunLife.w &lt;- MPF.SunLife.w.cpy 
+MPF.SunLife.w &lt;- MPF.SunLife.w.cpy
 
 VIX &lt;- getSymbols(&quot;^VIX&quot;, auto.assign = FALSE, from=&quot;2000-12-01&quot;, to=&quot;2019-05-31&quot;)</code></pre>
 <pre><code>## &#39;getSymbols&#39; currently uses auto.assign=TRUE by default, but will
@@ -2086,13 +2092,13 @@ VIX &lt;- getSymbols(&quot;^VIX&quot;, auto.assign = FALSE, from=&quot;2000-12-0
 ## &#39;loadSymbols&#39; to automatically load data. getOption(&quot;getSymbols.env&quot;)
 ## and getOption(&quot;getSymbols.auto.assign&quot;) will still be checked for
 ## alternate defaults.
-## 
-## This message is shown once per session and may be disabled by setting 
+##
+## This message is shown once per session and may be disabled by setting
 ## options(&quot;getSymbols.warning4.0&quot;=FALSE). See ?getSymbols for details.</code></pre>
-<pre><code>## 
+<pre><code>##
 ## WARNING: There have been significant changes to Yahoo Finance data.
 ## Please see the Warning section of &#39;?getSymbols.yahoo&#39; for details.
-## 
+##
 ## This message is shown once per session and may be disabled by setting
 ## options(&quot;getSymbols.yahoo.warning&quot;=FALSE).</code></pre>
 <pre class="r"><code>VIX[VIX&gt;=35] &lt;- 39.9
@@ -2115,7 +2121,7 @@ up &lt;- TRUE
 
 
 
-round_percent &lt;- function(x) { 
+round_percent &lt;- function(x) {
   x &lt;- x * 100
   result &lt;- floor(x)    # Find integer bits
   remain &lt;- x - result
@@ -2134,44 +2140,44 @@ round_percent &lt;- function(x) {
       rsum &lt;- sum(result)
       i &lt;- i+1
     }
-  } 
+  }
   result &lt;- result/100
-  return(result)    
+  return(result)
 }
 
 
 MPF.SunLife.returns.mat &lt;- as.matrix(MPF.SunLife.returns)
 
 for (row in 1:length(MPF.SunLife.w[,1])) {
-  
+
   MPF.SunLife.stock.mean &lt;- 0
   i &lt;- 0
-  
+
   for (col in 1:length(MPF.SunLife.w[1,])) {
-    
+
     MPF.SunLife.w[row,col] &lt;- na.fill(lag(MPF.SunLife.w[row,col], 1) * MPF.SunLife.RSI.p[row,col], 0) * VIX.month[row,6]
-    
+
     if (col != 7 &amp;&amp; col != 9 &amp;&amp; col != 11 &amp;&amp; col != 12) {
-      
+
       if (!is.na(MPF.SunLife.returns.mat[row,col])) {
         MPF.SunLife.stock.mean &lt;- MPF.SunLife.stock.mean + MPF.SunLife.returns.mat[row,col]
         i &lt;- i + 1
       }
-      
+
       if (MPF.SunLife.w[row,col] &lt; Min_NMMA) {
         MPF.SunLife.w[row,col] &lt;- 0
       }
-      
-      
-    }
-    
 
-    
+
+    }
+
+
+
   }
 
-  
+
   MPF.SunLife.stock.return[row] &lt;- MPF.SunLife.stock.mean / i
-  
+
     # Retain two most increasing fund
   last &lt;- length(MPF.SunLife.w[1,]) - top
   order &lt;- order(MPF.SunLife.w[row,])
@@ -2179,54 +2185,54 @@ for (row in 1:length(MPF.SunLife.w[,1])) {
     MPF.SunLife.w[row,col] &lt;- 0
   }
 
-  
-  
+
+
   if (MPF.SunLife.stock.return[row] &lt; 0 &amp;&amp; MPF.SunLife.stock.return[row-3] &lt; -0.004) {
     up &lt;- FALSE
   }
-  
-  if (hedge == TRUE &amp;&amp; MPF.SunLife.stock.return[row] &gt; 0 &amp;&amp; 
+
+  if (hedge == TRUE &amp;&amp; MPF.SunLife.stock.return[row] &gt; 0 &amp;&amp;
       MPF.SunLife.stock.return[row-3] &gt; -0.002) {
     hedge &lt;- FALSE
     up &lt;- TRUE
   }
-  
-    
-    
-  
+
+
+
+
   #MPF.SunLife.w &lt;- as.xts(MPF.SunLife.w, order.by = monthly)
   #MPF.SunLife.w &lt;- na.fill(MPF.SunLife.w, 0)
   MPF.SunLife.w.sum &lt;- sum(MPF.SunLife.w[row,])
-  
+
   MPF.SunLife.p &lt;- as.matrix(MPF.SunLife.returns)
   MPF.SunLife.p[,] &lt;- 0
-  
+
   # due to the composition of SunLife Fund are too active
   # the NMMA BIAS are triggered too frequently
   # See explanation before
-  
-  
+
+
   if (MPF.SunLife.w.sum &lt; 0.000025 || hedge == TRUE) {
     MPF.SunLife.p[row,11] &lt;- 1
   } else {
     MPF.SunLife.p[row,] &lt;- MPF.SunLife.w[row,]/MPF.SunLife.w.sum
   }
-  
-  
-  MPF.portf.weight[row,] &lt;- round_percent(MPF.SunLife.p[row,]) 
-  portf.rebal.fm &lt;- 
+
+
+  MPF.portf.weight[row,] &lt;- round_percent(MPF.SunLife.p[row,])
+  portf.rebal.fm &lt;-
     Return.portfolio(MPF.SunLife.returns, weight = MPF.portf.weight,geometric=TRUE,
                      rebalance_on = &quot;months&quot;)
-  
+
   MPF.portf.return[row] &lt;-
     tail(na.omit(portf.rebal.fm), 1)
   MPF.portf.drawdown &lt;- Drawdowns(MPF.portf.return,
                                   geometric = TRUE)
-  
+
   if (tail(na.omit(MPF.portf.drawdown), 1) &lt; -0.065 &amp;&amp; up == FALSE) {
     hedge = TRUE
   }
-  
+
 }</code></pre>
 </div>
 <div id="performance-analysis" class="section level3">

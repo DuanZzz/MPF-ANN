@@ -62,17 +62,17 @@ Using Top 2 Performers in n-m MA BIAS:
 Percentage on n-m MA BIAS: 100%   
 
 Annualized Return: ~10.32% (after deducting fees)  
-Mean Annualized Return: ~11.41% (after deducting fees)   
-Annualized Standard Deviation: 10.60% (StdDev(monthly return) * sqrt(12))   
-Sharpe Ratio: 10.58%/11.41% = 0.9988  
-Sortino Ratio: 0.5399 (MAR = 0%)  
-Expected Shortfall: 5.87% loss (0% Risk-free rate, 95% C.I.)  
+Mean Annual Return: ~11.81% (after deducting fees)   
+Annualized Standard Deviation: 10.95% (StdDev(monthly return) * sqrt(12))   
+Sharpe Ratio (Mean Annual Return): 11.81%/10.95% = 1.079   
+Sortino Ratio: 0.4739 (MAR = 0%)  
+Expected Shortfall: 6.68% loss (0% Risk-free rate, 95% C.I.)  
 
 --------------------------------------------------------------------------------
 
 Benchmark: 50-50 as described in the book written by Mr. Leung   
 (before deducting cost?)   
-Mean Annualized Return: 10.33%   
+Mean Annual Return: 10.33%   
 Annualized Standard Deviation: 12.85% (StdDev(monthly return) * sqrt(12))   
 Sharpe Ratio: 10.33%/12.85% = 0.8039   
 
