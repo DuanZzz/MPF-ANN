@@ -56,7 +56,7 @@ Percentage on n-m MA BIAS: 100%
 Annualized Return: ~12.46% (after deducting fees)  
 Mean Annual Return: ~13.97% (after deducting fees)   
 Annualized Standard Deviation: ~12.38% (StdDev(monthly return) * sqrt(12))   
-Sharpe Ratio (Mean Annual Return): 12.46%/12.38% = 1.007   
+Sharpe Ratio (Mean Annual Return): 13.97%/12.38% = 1.128   
 Sortino Ratio: 0.5192 (MAR = 0%)  
 Expected Shortfall: 7.33% loss (0% Risk-free rate, 95% C.I.)   
 Deflated Sharpe Ratio (p-value): 99.9%     
