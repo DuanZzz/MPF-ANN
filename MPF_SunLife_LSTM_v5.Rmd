@@ -51,7 +51,7 @@ Notice that it is impossible since MPF price are uploaded 1 business day, also r
 
 Using Top 2 Performers in n-m MA BIAS:  
 
-Percentage on n-m MA BIAS: 100%   
+Percentage on ANN: 100%   
 
 Annualized Return: ~12.46% (after deducting fees)  
 Mean Annual Return: ~13.97% (after deducting fees)   
@@ -83,9 +83,6 @@ Sharpe Ratio: 13.75%/13.37% = 1.028
 | ------------ | -------- | ----------------------------------------- |
 | top          | 2        | Top n Performer                           |
 | RSI_Overbuy  | 0.85     | RSI indicator (%)                         |
-| nm           | 1        | n-m in NMMA BIAS                          |
-| MA_long      | 6        | Longer MA in NMMA BIAS (months)           |
-| MA_short     | 2        | Shorter MA in NMMA BIAS (months)          |
 | RSI_Period   | 18       | MA period for RSI (months)                |
 | Min_NMMA     | 0.001    | Minimum Monthly Return to be consider     |   
 
