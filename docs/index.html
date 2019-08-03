@@ -5,27 +5,124 @@
 <head>
    <meta name="google-site-verification" content="SIVpqiyvEN1SF2_TRlppoGGpf2-9keHtiM3ekv2-Lww" />
    <title>Applying Deep Learning in MPF</title>
+   <style>
+	  
+	  html, body {
+	     padding: 0px;
+		 margin: 0px;
+	  }
+	  
+	  div {
+         text-align:center;
+		 margin: 0px;
+		 padding: 0px;
+	  }
+	  
+      .dropdown {
+	     position: fixed;
+		 top: 0px;
+		 left: 0px;
+		 background-color: Aquamarine;
+		 width: 100%;
+		 overflow: auto;
+	  }
+	  
+	  .dropdown-content {
+	     display: none;
+		 width: 100%;
+		 background-color: LightCoral;
+		 overflow:auto;
+		 z-index: 0;
+		 
+	  }
+	
+	  .dropdown:hover .dropdown-content {
+         display: block;
+		 z-index: 1;
+      }
+	  
+	  
+	  .footer {
+	     position: fixed;
+		 left: 0px;
+		 bottom: 0px;
+	     height: 50px;
+		 width: 100%;
+		 background-color: LightGrey;
+	  
+	  }
+	  
+	  .wrapper {
+	     min-height: 100%;
+		 height: 100%;
+	     width: 100%;
+		 padding-top: 50px;
+		 padding-bottom: 50px;
+	  }
+	  
+	  .content {
+	     position: fixed;
+		 bottom: 50px;
+	     height: Calc(100% - 100px);
+		 width: 100%;
+		 overflow: hide;
+		 z-index: -1;
+	  }
+	  
+	  
+	  iframe {
+	     height: 100%;
+		 width: 100%;
+		 margin: 0px;
+		 padding: 0px;
+		 border: 0px;
+	  }
+	
+   </style>
 </head>
 
 <body>
-<div style="text-align:center;">Checkout the superior MPF performance by Bidirectional Long Short Term Memory Artifical Neural Network Model!"</div>
 
-<div style="text-align:center;">
 
-   <p>
-     <a href="./Results/MPF_HSBC_LSTM.html">HSBC SuperTrust Plus (滙豐強積金智選計劃）</a>
-   </p>
-   <p>
-     <!-- <a href="./Results/MPF_BOCPT_LSTM.html"> --> BOCPT Easy Choice （中銀保誠簡易強積金計劃）<!-- </a> -->
-   </p>
-     <p>
-     <!-- <a href="./Results/MPF_BCT_LSTM.html"> --> BCT （銀聯積金之選）<!-- </a> -->
-   </p>
-   <p>
-     <a href="./Results/MPF_SunLife_LSTM.html">Sun Life Rainbow （永明彩虹強積金計劃）</a>
-   </p>
+ 
 
-   <p>Repository: <a href="https://github.com/jchan-gi/MPF-Deep-Learning">Click here to visit our GitHub.</a> Licensed with BSD 3-clause (Revised).
+<div class="wrapper">
+
+<div class="dropdown">
+   <p>Select one of the MPF scheme to preview the result.</p>
+   <div class="dropdown-content">
+   <p>
+     <a href="./Results/MPF_HSBC_LSTM.html" target="result">HSBC SuperTrust Plus (滙豐強積金智選計劃）</a>
+   </p>
+   <!--
+   <p>
+      <a href="./Results/MPF_BOCPT_LSTM.html" target="result">  BOCPT Easy Choice （中銀保誠簡易強積金計劃） </a>
+   </p> 
+   -->
+   <!-- 
+   <p>
+     <a href="./Results/MPF_BCT_LSTM.html" target="result"> BCT （銀聯積金之選）</a>
+   </p>
+   -->
+   <p>
+     <a href="./Results/MPF_SunLife_LSTM.html" target="result">Sun Life Rainbow （永明彩虹強積金計劃）</a>
+   </p>
+   </div>
 </div>
+ 
+ <div class="content">
+   <iframe name="result" height="100%" width="100%"></iframe>
+ </div>
+
+<div class="footer">
+Checkout the superior MPF performance by Long Short Term Memory Artifical Neural Network Model!"<br />
+Creator: jchan-gi (Jimmy Chan). Repository on <a href="https://github.com/jchan-gi/MPF-Deep-Learning">GitHub</a>. Licensed with BSD 3-clause (Revised).
+</div>
+
+ 
+
+
+</div>
+
 </body>
 </html>
