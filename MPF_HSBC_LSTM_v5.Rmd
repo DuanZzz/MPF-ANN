@@ -1,0 +1,651 @@
+---
+title: "HSBC MPF Investment Strategy and Backtesting (Preliminary Trial)"
+output: 
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+### FOR YOUR LEISURE AND INFORMATION ONLY. I WON'T RESPONSIBLE FOR ANY LOSS FOR USING THIS STRATEGY.   
+
+## WARNING: Please read the notification in this section first:   
+This script uses artifical neural network (ANN) model for MPF fund allocation.   
+However, ANN is stochastic in nature. It produces different results based on the pseudo-random seed (system time).   
+30 portfolios have been generated in order to generate trustworthy statistics for better prediction.   
+
+In addition, the prediction have no additional validation, the portfolio used a kind of walk-forward validation.   
+If the model is poor, then the return shall be poor.   
+
+In our script, we determined 0.0013 as the initial learning rate and epochs of 22.      
+
+
+### Introduction
+Mandatory Provident Fund (MPF) is one of the legal pensions in Hong Kong.  
+Employees and Employers are required to pay at least 5% of monthly salary to MPF services provider.  
+MPF providers are required to provide designated funds for employees to invest, 
+while the team could earn management fees.  
+
+However, the average annualized return of MPF is 3.1% only in from 2000-2016 (Mandatory Provident Fund Schemes Authority, 2016).  
+Hence most Hongkong employees feels they are forced to give their salary to fund manager.  
+Indeed, the reasons of low return may due to inactive management by employees.  
+In this example, we will explore artifical neural network to rise the annualized return.  
+
+### HSBC MPF Portfolio Generation using Artifical Neural Network (ANN) Relative Strength Index   
+
+Artifical Neural Network is a stochastic black-box model. It receives input and output the result by passing weighted values in neurons.   
+Formal definition could be searched on internet.   
+To support our application, we will uses VIX values and Relative Strength Index (RSI) to refine our prices.   
+VIX shows the significant volality in the market;
+While the RSI shows whether a stock/fund overbuy (or oversell) hence overpriced (or underpriced).  
+
+In our example, we directly uses Long-Short Term Memory to train and predict the future price of MPF constitute fund prices.  
+The fund would be finalized by applying penalty based on the result of RSI and VIX.
+
+### When to manage?
+
+In this example, we are going to collect daily price for all MPF fund in last day of a month.  
+Then, we are going to convert or reallocate the assets at the same time.  
+Notice that it is impossible since MPF price are uploaded 1 business day, also reallocation need at lest 2 business day to achieve.  
+
+### Results
+
+Using Top 2 Performers in LSTM ANN (Lastest rebalance date: 2019/07/31)  
+
+Annualized Return: ~9.88% (after deducting fees)  
+Mean Annual Return: ~10.02% (after deducting fees)   
+Annualized Standard Deviation: ~12.22% (StdDev(monthly return) * sqrt(12))   
+Sharpe Ratio (Mean Annual Return): 10.02%/12.22% = 0.8199   
+Sortino Ratio: 0.4260 (MAR = 0%)  
+Expected Shortfall: 7.24% loss (0% Risk-free rate, 95% C.I.)   
+Deflated Sharpe Ratio (p-value): 99.8%     
+
+--------------------------------------------------------------------------------
+
+Benchmark: 50-50 as described in the book written by Mr. Leung   
+(before deducting cost?)   
+Mean Annual Return: 7.94%      
+Annualized Standard Deviation: 13.99% (StdDev(monthly return) * sqrt(12))   
+Sharpe Ratio: 7.94%/13.99% = 0.5675   
+
+--------------------------------------------------------------------------------
+
+Benchmark: 10th strategy by Mr. Leung   
+(before deducting cost?)   
+Mean Annual Return: 9.71%   
+Annualized Standard Deviation: 12.71% (StdDev(monthly return) * sqrt(12))   
+Sharpe Ratio: 9.71%/12.71% = 0.764   
+
+## Recommended Parameters
+
+| Variable     | Val.     | Explanation                               |
+| ------------ | -------- | ----------------------------------------- |
+| top          | 2        | Top n Performer                           |
+| RSI_Overbuy  | 0.85     | RSI indicator (%)                         |
+| RSI_Period   | 18       | MA period for RSI (months)                |
+| Min_NMMA     | 1e-6     | Minimum Monthly Return to be consider     |   
+
+
+## Detailed Workflow
+
+### Package Preparation
+
+1. Install necessary packages
+```{r warning=FALSE, results="hide", eval=FALSE}
+r = getOption("repos")
+r["CRAN"] = "https://mran.revolutionanalytics.com/snapshot/2019-06-01"
+options(repos = r)
+install.packages("zoo")
+install.packages("xts")
+install.packages("fBasics")
+install.packages("quantmod")
+install.packages("PerformanceAnalytics")
+install.packages("keras")
+
+```
+
+2. Now load necessary packages.
+```{r warning=FALSE, results="hide"}
+library("zoo")
+library("xts")
+library("fBasics")
+library("quantmod")
+library("PerformanceAnalytics")
+library("keras")
+
+
+```
+
+### Load Prices and Calculate Return
+
+0. Parameters
+```{r warning=FALSE}
+top <- 2
+RSI_Overbuy <- 0.85
+RSI_Period <- 18 
+Min_NMMA <- 1e-6
+```
+
+1. Load the price into zoo format
+```{r warning=FALSE}
+MPF.HSBC <- as.xts(read.zoo("D:/OneDrive/MPF/HSBC SuperTrust Plus/HSBC_MPF_SuperTrustPlus.csv", format="%d/%m/%Y", header=TRUE, na.strings="0", read = read.csv))
+
+daily <- index(MPF.HSBC)
+MPF.HSBC.cost <- c(0.0148, 0.0151, 0.0079, 0.0146, 0.0140, 0.0160, 0.0076, 0.0080, 0.0150, 0, 0.0140, 0.0134, 0.0079, 0.0079, 0.0079, 0.0079, 0.0079, 0.0079) / 12
+
+MPF.HSBC.dailyCost <- c(0.0148, 0.0151, 0.0079, 0.0146, 0.0140, 0.0160, 0.0076, 0.0080, 0.0150, 0, 0.0140, 0.0134, 0.0079, 0.0079, 0.0079, 0.0079, 0.0079, 0.0079) / 12 / 21
+
+```
+
+
+
+2. Calculate Relative Strength Index (RSI)
+```{r include=FALSE, results=FALSE}
+MPF.HSBC.RSI <- na.fill(apply(MPF.HSBC, 2, function(x) RSI(x, n=21*RSI_Period)),0)
+MPF.HSBC.RSI <- as.xts(MPF.HSBC.RSI, order.by = daily)
+```
+
+
+3. Calculate Returns
+```{r warning=FALSE}
+
+MPF.HSBC.AP <- monthlyReturn(as.xts(MPF.HSBC$Asia.Pacific.Equity.Fund), type="log")
+MPF.HSBC.B <- monthlyReturn(as.xts(MPF.HSBC$Balanced.Fund), type="log")
+MPF.HSBC.CA <- monthlyReturn(as.xts(MPF.HSBC$Core.Accumulation.Fund), type="log")
+MPF.HSBC.CE <- monthlyReturn(as.xts(MPF.HSBC$China.Equity.Fund), type="log")
+MPF.HSBC.EE <- monthlyReturn(as.xts(MPF.HSBC$European.Equity.Fund), type="log")
+MPF.HSBC.G <- monthlyReturn(as.xts(MPF.HSBC$Growth.Fund), type="log")
+MPF.HSBC.GB <- monthlyReturn(as.xts(MPF.HSBC$Global.Bond.Fund), type="log")
+MPF.HSBC.HSIT <- monthlyReturn(as.xts(MPF.HSBC$Hang.Seng.Index.Tracking.Fund), type="log")
+MPF.HSBC.HKCE <- monthlyReturn(as.xts(MPF.HSBC$Hong.Kong.and.Chinese.Equity.Fund), type="log")
+MPF.HSBC.MPFC <- monthlyReturn(as.xts(MPF.HSBC$MPF.Conservative.Fund), type="log")
+MPF.HSBC.NA <- monthlyReturn(as.xts(MPF.HSBC$North.American.Equity.Fund), type="log")
+MPF.HSBC.S <- monthlyReturn(as.xts(MPF.HSBC$Stable.Fund), type="log")
+MPF.HSBC.HSHIT <- monthlyReturn(as.xts(MPF.HSBC$HSI.H.Share), type="log")
+MPF.HSBC.VCAP <- monthlyReturn(as.xts(MPF.HSBC$ValueChoice.Asia.Pacific), type="log")
+MPF.HSBC.VCB <- monthlyReturn(as.xts(MPF.HSBC$ValueChoice.Balanced), type="log")
+MPF.HSBC.VCE <- monthlyReturn(as.xts(MPF.HSBC$ValueChoice.European), type="log")
+MPF.HSBC.VCUS <- monthlyReturn(as.xts(MPF.HSBC$ValueChoice.US.Equity), type="log")
+MPF.HSBC.GE <- monthlyReturn(as.xts(MPF.HSBC$Global.Equity), type="log")
+
+MPF.HSBC.returns <- merge(MPF.HSBC.AP, MPF.HSBC.B, MPF.HSBC.CA, MPF.HSBC.CE, MPF.HSBC.EE, MPF.HSBC.GB, MPF.HSBC.G, MPF.HSBC.HSIT, MPF.HSBC.HKCE, MPF.HSBC.MPFC, MPF.HSBC.NA, MPF.HSBC.S, MPF.HSBC.HSHIT, MPF.HSBC.VCAP, MPF.HSBC.VCB, MPF.HSBC.VCE, MPF.HSBC.VCUS, MPF.HSBC.GE)
+
+# Apply the managment cost in return
+for (col in 1:length(MPF.HSBC.returns[1,])) {
+  MPF.HSBC.returns[,col] <- MPF.HSBC.returns[,col] - MPF.HSBC.cost[col]
+}
+
+monthly <- index(MPF.HSBC.returns)
+
+colnames(MPF.HSBC.returns) <- c("AP", "B", "CA", "CE", "EE", "GB", "G", "HSIT", "HKCE", "MPFC", "NA", "S", "HSHIT", "VCAP", "VCB", "VCE", "VCUS", "GE")
+
+rm(MPF.HSBC.AP, MPF.HSBC.B, MPF.HSBC.CA, MPF.HSBC.CE, MPF.HSBC.EE, MPF.HSBC.G, MPF.HSBC.GB,
+   MPF.HSBC.HKCE, MPF.HSBC.HSIT, MPF.HSBC.MPFC, MPF.HSBC.NA, MPF.HSBC.S, MPF.HSBC.HSHIT, 
+   MPF.HSBC.VCAP, MPF.HSBC.VCB, MPF.HSBC.VCE, MPF.HSBC.VCUS, MPF.HSBC.GE)
+
+
+
+MPF.HSBC.AP <- dailyReturn(as.xts(MPF.HSBC$Asia.Pacific.Equity.Fund), type="log")
+MPF.HSBC.B <- dailyReturn(as.xts(MPF.HSBC$Balanced.Fund), type="log")
+MPF.HSBC.CA <- dailyReturn(as.xts(MPF.HSBC$Core.Accumulation.Fund), type="log")
+MPF.HSBC.CE <- dailyReturn(as.xts(MPF.HSBC$China.Equity.Fund), type="log")
+MPF.HSBC.EE <- dailyReturn(as.xts(MPF.HSBC$European.Equity.Fund), type="log")
+MPF.HSBC.G <- dailyReturn(as.xts(MPF.HSBC$Growth.Fund), type="log")
+MPF.HSBC.GB <- dailyReturn(as.xts(MPF.HSBC$Global.Bond.Fund), type="log")
+MPF.HSBC.HSIT <- dailyReturn(as.xts(MPF.HSBC$Hang.Seng.Index.Tracking.Fund), type="log")
+MPF.HSBC.HKCE <- dailyReturn(as.xts(MPF.HSBC$Hong.Kong.and.Chinese.Equity.Fund), type="log")
+MPF.HSBC.MPFC <- dailyReturn(as.xts(MPF.HSBC$MPF.Conservative.Fund), type="log")
+MPF.HSBC.NA <- dailyReturn(as.xts(MPF.HSBC$North.American.Equity.Fund), type="log")
+MPF.HSBC.S <- dailyReturn(as.xts(MPF.HSBC$Stable.Fund), type="log")
+MPF.HSBC.HSHIT <- dailyReturn(as.xts(MPF.HSBC$HSI.H.Share), type="log")
+MPF.HSBC.VCAP <- dailyReturn(as.xts(MPF.HSBC$ValueChoice.Asia.Pacific), type="log")
+MPF.HSBC.VCB <- dailyReturn(as.xts(MPF.HSBC$ValueChoice.Balanced), type="log")
+MPF.HSBC.VCE <- dailyReturn(as.xts(MPF.HSBC$ValueChoice.European), type="log")
+MPF.HSBC.VCUS <- dailyReturn(as.xts(MPF.HSBC$ValueChoice.US.Equity), type="log")
+MPF.HSBC.GE <- dailyReturn(as.xts(MPF.HSBC$Global.Equity), type="log")
+
+MPF.HSBC.dailyReturns <- merge(MPF.HSBC.AP, MPF.HSBC.B, MPF.HSBC.CA, MPF.HSBC.CE, MPF.HSBC.EE, MPF.HSBC.GB, MPF.HSBC.G, MPF.HSBC.HSIT, MPF.HSBC.HKCE, MPF.HSBC.MPFC, MPF.HSBC.NA, MPF.HSBC.S, MPF.HSBC.HSHIT, MPF.HSBC.VCAP, MPF.HSBC.VCB, MPF.HSBC.VCE, MPF.HSBC.VCUS, MPF.HSBC.GE)
+
+# Apply the managment cost in return
+for (col in 1:length(MPF.HSBC.returns[1,])) {
+  MPF.HSBC.dailyReturns[,col] <- MPF.HSBC.dailyReturns[,col] - MPF.HSBC.dailyCost[col]
+}
+
+
+colnames(MPF.HSBC.dailyReturns) <- c("AP", "B", "CA", "CE", "EE", "GB", "G", "HSIT", "HKCE", "MPFC", "NA", "S", "HSHIT", "VCAP", "VCB", "VCE", "VCUS", "GE")
+
+rm(MPF.HSBC.AP, MPF.HSBC.B, MPF.HSBC.CA, MPF.HSBC.CE, MPF.HSBC.EE, MPF.HSBC.G, MPF.HSBC.GB,
+   MPF.HSBC.HKCE, MPF.HSBC.HSIT, MPF.HSBC.MPFC, MPF.HSBC.NA, MPF.HSBC.S, MPF.HSBC.HSHIT, 
+   MPF.HSBC.VCAP, MPF.HSBC.VCB, MPF.HSBC.VCE, MPF.HSBC.VCUS, MPF.HSBC.GE)
+```
+
+### Calculate average RSI of the month, and then adjustment factor
+Adjustment factor = 1 - ECDF of RSI of that month
+New weight = old weight * (0.05 + adjustment factor)
+Finally normalize it to sum(row) = 1
+
+```{r warning=FALSE}
+MPF.HSBC.RSI.month <- as.xts(do.call(rbind, lapply(split(as.xts(MPF.HSBC.RSI), "months"), function(x) colAvgs(x))), order.by = monthly)
+MPF.HSBC.RSI.p <- MPF.HSBC.returns
+MPF.HSBC.RSI.p[,] <- 0
+for (col in 1:length(MPF.HSBC.RSI.month[1,])) {
+  if (col != 11) {
+    for (row in 1:length(MPF.HSBC.RSI.month[,col])) {
+      percentile <- ecdf(as.numeric(MPF.HSBC.RSI.month[1:row,col]))
+      if (percentile(MPF.HSBC.RSI.month[row,col]) >= (RSI_Overbuy - ((length(1:row)^(1/3))/(length(1:row)^(1/2))))) {
+        MPF.HSBC.RSI.p[row,col] <- 0.4
+      } else {
+        MPF.HSBC.RSI.p[row,col] <- 1.4-(percentile(MPF.HSBC.RSI.month[row,col])^2)
+      }
+    }
+    
+  } else {
+    MPF.HSBC.RSI.p[,col] <- 1
+  }
+}
+MPF.HSBC.RSI.sum <- as.xts(rowSums(MPF.HSBC.RSI.p), order.by = monthly)
+for (row in 1:length(MPF.HSBC.RSI.p[,col])) {
+  MPF.HSBC.RSI.p[row,] = apply(MPF.HSBC.RSI.p[row,], 2, function(x) (x/MPF.HSBC.RSI.sum[row,1])^(0.25))
+}
+MPF.HSBC.RSI.sum <- as.xts(rowSums(MPF.HSBC.RSI.p), order.by = monthly) 
+```
+
+### Train and predict with Long Short Term Memory (LSTM) model
+```{r warning=FALSE, results="hide", eval=FALSE}
+use_condaenv("tensorflow")
+use_implementation("tensorflow")
+use_backend("tensorflow")
+
+
+MPF.HSBC.w.all <- array(MPF.HSBC.returns,
+                           c(length(MPF.HSBC.returns[,1]),length(MPF.HSBC.returns[1,]),30))
+MPF.HSBC.period <- length(MPF.HSBC.w.all[,1,1])
+MPF.HSBC.w.all[,,] <- 0
+
+max_return <- colMaxs(MPF.HSBC.returns)
+min_return <- colMins(MPF.HSBC.returns)
+
+MPF.HSBC.returns_normalized <- MPF.HSBC.returns
+MPF.HSBC.returns_normalized[,] <- 0
+
+for (col in 1:length(MPF.HSBC.returns[1,])) {
+  MPF.HSBC.returns_normalized[,col] <- (MPF.HSBC.returns[,col] - min_return[col]) / (max_return[col] - min_return[col])
+}
+
+temp <- as.matrix(MPF.HSBC.returns_normalized)
+colNum <- 1:length(MPF.HSBC.returns_normalized[1,])
+matrix <- c()
+
+seed <- c(71880,21251,98689,65940,22528,
+          5447,13014,49976,57549,95690,
+          18466,46047,55070,9292,82205,
+          88714,38882,58473,75294,66679,
+          68541,42252,41907,37306,75969,
+          997,5609,95359,75506,93963)
+
+for (pass in 1:30) {
+  
+  learning <- 0.0013
+  n_steps <- 3
+  
+  
+  use_session_with_seed(seed[pass],FALSE, FALSE)
+  
+  model <- keras_model_sequential()
+  model %>% layer_cudnn_lstm(units = 7, return_sequences=TRUE, , 
+                             input_shape = c(1,1)) %>%
+    layer_cudnn_lstm(units = 7, return_sequences=TRUE) %>%
+    layer_cudnn_lstm(units = 7) %>%
+    layer_dense(1)
+  
+  
+  
+  ad <- keras::optimizer_adam(lr = learning)
+  model %>% compile(optimizer = ad, loss="mean_squared_error")
+  
+  
+  for (col in colNum) {
+    X <- c()
+    y <- c()
+    
+    counter <- 0
+    minimum <- 4
+    
+    
+    X <- as.matrix(na.omit(MPF.HSBC.returns_normalized[,col]))
+    y <- as.matrix(na.omit(lag(na.omit(MPF.HSBC.returns_normalized[,col]), -1)))
+    
+    predicted <- c()
+    len <- 1
+    
+    
+    for (i in 1:length(X)-1) {
+      
+      
+      X_train <- X[1:(i)]
+      y_train <- y[1:(i)]
+      
+      X_test <- X[1:(i+1)]
+      if (i != length(X)-1) {
+        y_test <- y[1:(i+1)]
+      }
+      
+      dim(X_train) <- c(length(X_train),1,1)
+      dim(X_test) <- c(length(X_test),1,1)
+      
+      if (i != length(X) - 1) {
+        history <- model %>% fit(X_train, y_train, validation_data = list(X_test, y_test), epochs=22, batch_size = 128, verbose = 0)
+        #plot(history,metrics=c('loss'))
+      } else {
+        history <- model %>% fit(X_train, y_train, epochs=22, batch_size = 128, verbose = 0)
+        
+      }
+      
+      input <- X_test
+      dim(input) <- c(length(input),1,1)
+      
+      return <- model %>% predict(input,batch_size = 128)
+        
+      model %>% reset_states()
+      
+      predicted[len] <- return
+      len <- len+1
+      
+      #plot(model)
+      
+      
+    }
+    
+    
+    
+    result.length <- len - 1
+    
+    for (row in (MPF.HSBC.period - result.length+1) : (MPF.HSBC.period)) {
+      MPF.HSBC.w.all[row, col, pass] <- predicted[(row + result.length - MPF.HSBC.period)]
+    }
+  }
+  #keras::k_clear_session()
+}
+
+
+
+```
+
+### Calculate the weight according to predicted return
+```{r warning=FALSE}
+MPF.HSBC.w <- MPF.HSBC.returns
+MPF.HSBC.w[,] <- 0
+
+MPF.HSBC.w <- rowAvgs(MPF.HSBC.w.all, dims=2)
+for (col in 1:length(MPF.HSBC.w[1,])) {
+  MPF.HSBC.w[,col] <- (MPF.HSBC.w[,col] * (max_return[col] - min_return[col])) + min_return[col]
+}
+
+VIX <-
+  getSymbols("^VIX",
+             auto.assign = FALSE,
+             from = "2000-12-01",
+             to = "2019-07-31")
+VIX[VIX >= 35] <- 39.9
+VIX.month <-
+  do.call(rbind, lapply(split(na.fill((
+    1 - (VIX / 40)
+  ), 0), "months"), function(x)
+    colAvgs(x)))
+MPF.portf.weight <- MPF.HSBC.returns
+MPF.portf.weight[, ] <- NA
+MPF.portf.weight.all <- MPF.HSBC.returns
+MPF.portf.weight.all[,] <- NA
+MPF.HSBC.stock.return <-
+  as.xts(rowSums(MPF.HSBC.RSI.month), order.by = monthly)
+MPF.HSBC.stock.return[] <- NA
+MPF.portf.return <-
+  as.xts(rowSums(MPF.HSBC.RSI.month), order.by = monthly)
+MPF.portf.return[] <- NA
+
+MPF.HSBC.returns.mat <- as.matrix(MPF.HSBC.returns)
+MPF.HSBC.returns.mat[MPF.HSBC.returns.mat == 0] <- NA
+
+MPF.HSBC.p <- as.matrix(MPF.HSBC.returns)
+MPF.HSBC.p[, ] <- 0
+SR.all <- c()
+
+
+hedge <- FALSE
+up <- TRUE
+round_percent <- function(x) {
+  x <- x * 100
+  result <- floor(x)    # Find integer bits
+  remain <- x - result
+  rsum <- sum(result)   # Find out how much we are missing
+  i <- 1
+  if (rsum < 100) {
+    o <- order(remain, decreasing = TRUE)
+    while (rsum < 100) {
+      if (i > length(remain))
+        i <- 1
+      idx <- o[i]
+      if (result[idx] == 0) {
+        i <- i + 1
+        next
+      }
+      result[idx] <- result[idx] + 1
+      rsum <- sum(result)
+      i <- i + 1
+    }
+  }
+  result <- result / 100
+  return(result)
+}
+
+
+
+for (row in 1:length(MPF.HSBC.w[, 1])) {
+  #print(row)
+  MPF.HSBC.stock.mean <- 0
+  i <- 0
+  
+  for (col in 1:length(MPF.HSBC.w[1, ])) {
+    if ((col >= 13 && col <= 18) && daily[row] <= "2019-07-01") {
+      MPF.HSBC.w[row,col] <- 0
+    }
+    
+    MPF.HSBC.w[row, col] <-
+      na.fill((MPF.HSBC.w[row, col]) * MPF.HSBC.RSI.p[row, col], 0) * VIX.month[row, 6]
+    
+    if (col != 7 && col != 10 && col != 12) {
+      if (!is.na(MPF.HSBC.returns.mat[row, col]) && MPF.HSBC.returns.mat[row,col] != 0) {
+        MPF.HSBC.stock.mean <-
+          MPF.HSBC.stock.mean + MPF.HSBC.returns.mat[row, col]
+        i <- i + 1
+      }
+      
+      if (MPF.HSBC.w[row, col] < 1e-6) {
+        MPF.HSBC.w[row, col] <- 0
+      }
+    } else {
+      if (MPF.HSBC.w[row, col] < 0) {
+        MPF.HSBC.w[row, col] <- 0
+      }
+    }
+  }
+  
+  MPF.HSBC.stock.return[row] <- MPF.HSBC.stock.mean / i
+  
+  # Retain two most increasing fund
+  last <- length(MPF.HSBC.w[1, ]) - top
+  order <- order(MPF.HSBC.w[row, ])
+  for (col in order[1:last]) {
+    MPF.HSBC.w[row, col] <- 0
+  }
+  
+  #print("segment 1")
+  
+  
+  if (row >= 5 && MPF.HSBC.stock.return[row] < 0.005 &&
+      MPF.HSBC.stock.return[row - 3] < 0) {
+    up <- FALSE
+  }
+  
+  if (hedge == TRUE && row >= 5 &&
+      MPF.HSBC.stock.return[row] > 0.005  &&
+      MPF.HSBC.stock.return[row - 3] > 0) {
+    hedge <- FALSE
+    up <- TRUE
+  }
+  
+  MPF.HSBC.w.sum <- sum(MPF.HSBC.w[row, ])
+  
+  
+  if (row <= 12 || MPF.HSBC.w.sum == MPF.HSBC.w[row, 10] ||
+      MPF.HSBC.w.sum < 1e-7 || hedge == TRUE) {
+    MPF.HSBC.p[row, 10] <- 1
+  } else if (length(which(MPF.HSBC.w[row, ] != 0)) == 1) {
+    MPF.HSBC.p[row, ] <- MPF.HSBC.w[row, ] / MPF.HSBC.w.sum
+    MPF.HSBC.p[row, 10] <- MPF.HSBC.w.sum / 2
+  } else {
+    MPF.HSBC.p[row, ] <- MPF.HSBC.w[row, ] / MPF.HSBC.w.sum
+  }
+  
+  
+  
+  MPF.portf.weight[row, ] <- round_percent(MPF.HSBC.p[row, ])
+  portf.rebal.fm <-
+    Return.portfolio(
+      MPF.HSBC.returns,
+      weight = MPF.portf.weight,
+      geometric = TRUE,
+      rebalance_on = "months"
+    )
+  MPF.portf.return[row] <-
+    tail(na.omit(portf.rebal.fm), 1)
+  MPF.portf.drawdown <- Drawdowns(MPF.portf.return,
+                                  geometric = TRUE)
+  if (tail(na.omit(MPF.portf.drawdown), 1) < -0.065 &&
+      up == FALSE) {
+    hedge = TRUE
+  }
+}
+
+for (pass in 1:30) {
+  MPF.HSBC.w.i <- MPF.HSBC.w
+  MPF.HSBC.w.i[, ] <- MPF.HSBC.w.all[,,pass]
+  MPF.HSBC.returns.mat <- as.matrix(MPF.HSBC.w.all[,,pass])
+  
+  for (col in 1:length(MPF.HSBC.w[1,])) {
+    MPF.HSBC.w.i[,col] <- (MPF.HSBC.w.i[,col] * (max_return[col] - min_return[col])) + min_return[col]
+  }
+  
+  for (row in 1:length(MPF.HSBC.w.i[, 1])) {
+  MPF.HSBC.stock.mean <- 0
+  i <- 0
+  
+  for (col in 1:length(MPF.HSBC.w[1, ])) {
+    if ((col >= 13 && col <= 18) && daily[row] <= "2019-07-01") {
+      MPF.HSBC.w.i[row,col] <- 0
+    }
+    
+    MPF.HSBC.w.i[row, col] <-
+      na.fill((MPF.HSBC.w.i[row, col]) * MPF.HSBC.RSI.p[row, col], 0) * VIX.month[row, 6]
+    
+    if (col != 7 && col != 10 && col != 12) {
+      if (!is.na(MPF.HSBC.returns.mat[row, col]) && MPF.HSBC.returns.mat[row,col] != 0) {
+        MPF.HSBC.stock.mean <-
+          MPF.HSBC.stock.mean + MPF.HSBC.returns.mat[row, col]
+        i <- i + 1
+      }
+      
+      if (MPF.HSBC.w.i[row, col] < 1e-6) {
+        MPF.HSBC.w.i[row, col] <- 0
+      }
+    } else {
+      if (MPF.HSBC.w.i[row, col] < 0) {
+        MPF.HSBC.w.i[row, col] <- 0
+      }
+    }
+  }
+    
+    MPF.HSBC.stock.return[row] <- MPF.HSBC.stock.mean / i
+    
+    # Retain two most increasing fund
+    last <- length(MPF.HSBC.w.i[1, ]) - top
+    order <- order(MPF.HSBC.w.i[row, ])
+    for (col in order[1:last]) {
+      MPF.HSBC.w.i[row, col] <- 0
+    }
+    
+    #print("segment 1")
+    
+    
+    if (row >= 5 && MPF.HSBC.stock.return[row] < 0.005 &&
+        MPF.HSBC.stock.return[row - 3] < 0) {
+      up <- FALSE
+    }
+    
+    if (hedge == TRUE && row >= 5 &&
+        MPF.HSBC.stock.return[row] > 0.005  &&
+        MPF.HSBC.stock.return[row - 3] > 0) {
+      hedge <- FALSE
+      up <- TRUE
+    }
+    
+    MPF.HSBC.w.sum <- sum(MPF.HSBC.w.i[row, ])
+    
+    
+    if (row <= 12 || MPF.HSBC.w.sum == MPF.HSBC.w.i[row, 10] ||
+        MPF.HSBC.w.sum < 1e-7 || hedge == TRUE) {
+      MPF.HSBC.p[row, 10] <- 1
+    } else if (length(which(MPF.HSBC.w.i[row, ] != 0)) == 1) {
+      MPF.HSBC.p[row, ] <- MPF.HSBC.w.i[row, ] / MPF.HSBC.w.sum
+      MPF.HSBC.p[row, 10] <- MPF.HSBC.w.sum / 2
+    } else {
+      MPF.HSBC.p[row, ] <- MPF.HSBC.w.i[row, ] / MPF.HSBC.w.sum
+    }
+    
+    MPF.portf.weight.all[row,] <-
+      round_percent(MPF.HSBC.p[row, ])
+  }
+  
+  
+  portf.rebal.i <-
+    Return.portfolio(
+      MPF.HSBC.returns,
+      weight = MPF.portf.weight.all,
+      geometric = TRUE,
+      rebalance_on = "months"
+    )
+  SR.all[pass] <-
+    Return.annualized(portf.rebal.i, geometric = TRUE) / (StdDev(portf.rebal.i) * sqrt(12))
+}
+
+
+```
+
+### Performance Analysis
+```{r warning=FALSE}
+portf.rebal.fm <- Return.portfolio(MPF.HSBC.returns, weight = MPF.portf.weight, geometric=TRUE, rebalance_on = "months")
+mean.annual.return <- mean(do.call(rbind, lapply(split(portf.rebal.fm, "years"), function(x) colMeans(x))) * 12)
+charts.PerformanceSummary(portf.rebal.fm, methods= "ModifiedES", geometric=TRUE, p=.95, main="Sun Life Rainbow MPF Scheme Performance")
+portf.rebal.fm.sharpe <- Return.annualized(portf.rebal.fm, geometric=TRUE) / (StdDev(portf.rebal.fm) * sqrt(12))
+portf.rebal.fm.mean.sharpe <- mean.annual.return / (StdDev(portf.rebal.fm) * sqrt(12))
+rownames(portf.rebal.fm.sharpe) <- "Sharpe Ratio (annualized)"
+rownames(portf.rebal.fm.mean.sharpe) <- "Sharpe Ratio (mean annual Nreturn)"
+colnames(portf.rebal.fm.mean.sharpe) <- "portfolio.returns"
+Return.annualized(portf.rebal.fm, geometric=TRUE)
+mean.annual.return
+portf.rebal.fm.sharpe
+portf.rebal.fm.mean.sharpe
+StdDev.annualized(portf.rebal.fm)
+SortinoRatio(portf.rebal.fm)
+ES(portf.rebal.fm, method="historical")
+tail(MPF.portf.weight, n=1)
+
+
+### Deflated Sharpe Ratio
+SR_zero <- sqrt((StdDev(SR.all))^2/12) * ((1-0.57721)*qnorm(1-1/31)+(0.57721)*qnorm(1-(1/(31*2.71828))))
+DSR <- pnorm(((portf.rebal.fm.sharpe/sqrt(12)-SR_zero)*sqrt(length(MPF.HSBC.returns[,1])))/sqrt(1-skewness(portf.rebal.fm)*portf.rebal.fm.sharpe+((kurtosis(portf.rebal.fm)-1)/4)*(portf.rebal.fm.sharpe)^2))
+
+rownames(DSR) <- "Deflated Sharpe Ratio"
+DSR
+
+
+```
