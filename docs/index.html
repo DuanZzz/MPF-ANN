@@ -28,6 +28,7 @@
 	  
       .dropdown {
 	     position: fixed;
+		 display: block;
 		 top: 0px;
 		 left: 0px;
 		 background-color: Aquamarine;
@@ -35,7 +36,7 @@
 		 overflow: auto;
 	  }
 	  
-	  .dropdown-content {
+	  div.dropdown-content {
 	     font-size: 100%;
 	     display: none;
 		 width: 100%;
@@ -45,7 +46,7 @@
 		 
 	  }
 	
-	  .dropdown:hover .dropdown-content, .dropdown:focus .dropdown-content, .dropdown:active  .dropdown-content {
+	  .dropdown:hover .dropdown-content {
          display: block;
 		 z-index: 1;
       }
@@ -173,9 +174,8 @@
 
 <div class="wrapper">
 
-<div class="dropdown">
-   <p style="font-weight: bold;">Select one of the MPF schemes to preview the result.</p>
-   <div class="dropdown-content">
+<div class="dropdown"><a href="javascript:void(0);" style="font-weight: bold; display:block;"><p>Select one of the MPF schemes to preview the result.</p></a>
+<div class="dropdown-content">
    <p>
      <a href="./Results/MPF_HSBC_LSTM.html" target="result">HSBC SuperTrust Plus (滙豐強積金智選計劃）</a>
    </p>
