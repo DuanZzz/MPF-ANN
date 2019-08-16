@@ -1,4 +1,4 @@
-# MPF-Deep-Learning
+# MPF-ANN
 Do you believe you can boost your MPF with Sharpe ratio near 1?   
 Check out the superior MPF fund performance supported by Artifical Neural Network!   
 Preliminary result at [here](https://jchan-gi.github.io/MPF-Deep-Learning/)!
@@ -18,4 +18,4 @@ or decisions that suit your needs and objectives.
 4. My studies are not professional advice and may not be suitable for anyone except myself. 
 
 # License of the source code and repositories
-BSD 3-clause (Revised)
+* BSD 3-clause (Revised)
