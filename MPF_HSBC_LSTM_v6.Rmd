@@ -1,5 +1,5 @@
 ---
-title: "HSBC MPF Investment Strategy and Backtesting (Preliminary Trial)"
+title: "滙豐強積金應用人工神經網絡的早期試驗 - HSBC MPF-ANN Backtesting (Preliminary Trial)"
 output: 
   html_document:
     df_print: paged
@@ -19,7 +19,7 @@ making any decisions. Professional financial consultants should recommend produc
 or decisions that suit your needs and objectives.    
 4. My studies are not professional advice and may not be suitable for anyone except myself. 
 
-### Last update: 2019/08/06.
+### Last update: 2019/08/16.
 
 ### The algorithm have been changed significantly on 2019/08/06.
 We removed the VIX condition in our algorithm.   
@@ -72,26 +72,24 @@ Notice that it is impossible since MPF price are uploaded 1 business day, also r
 
 Using Top 2 Performers in LSTM ANN (Lastest rebalance date: 2019/07/31)  
 
-Annualized Return: ~8.97% (after deducting fees)  
-Mean Annual Return: ~9.02% (after deducting fees)   
-Annualized Standard Deviation: ~10.93% (StdDev(monthly return) * sqrt(12))   
-Sharpe Ratio (Mean Annual Return): 9.02%/10.93% = 0.8248   
-Sortino Ratio: 0.4063 (MAR = 0%)  
-Expected Shortfall: 7.20% loss (0% Risk-free rate, 95% C.I.)   
-Deflated Sharpe Ratio (p-value): 99.7%     
+Annualized Return: ~10.54%      
+Mean Annual Return: ~10.42%   
+Annualized Standard Deviation: ~11.99% (StdDev(monthly return) * sqrt(12))   
+Sharpe Ratio (Mean Annual Return): 10.42%/11.99% = 0.8693   
+Sortino Ratio: 0.4469 (MAR = 0%)  
+Expected Shortfall: 7.53% loss (0% Risk-free rate, 95% C.I.)   
+Deflated Sharpe Ratio (p-value): 99.93%     
 
 --------------------------------------------------------------------------------
 
 Benchmark: 50-50 as described in the book written by Mr. Leung   
-(before deducting cost?)   
 Mean Annual Return: 7.94%      
 Annualized Standard Deviation: 13.99% (StdDev(monthly return) * sqrt(12))   
 Sharpe Ratio: 7.94%/13.99% = 0.5675   
 
 --------------------------------------------------------------------------------
 
-Benchmark: 10th strategy by Mr. Leung   
-(before deducting cost?)   
+Benchmark: 10th strategy by Mr. Leung    
 Mean Annual Return: 9.71%   
 Annualized Standard Deviation: 12.71% (StdDev(monthly return) * sqrt(12))   
 Sharpe Ratio: 9.71%/12.71% = 0.764   
@@ -149,11 +147,7 @@ Min_NMMA <- 1e-6
 1. Load the price into zoo format
 ```{r warning=FALSE}
 MPF.HSBC <- as.xts(read.zoo("D:/OneDrive/MPF/HSBC SuperTrust Plus/HSBC_MPF_SuperTrustPlus.csv", format="%d/%m/%Y", header=TRUE, na.strings="0", read = read.csv))
-
 daily <- index(MPF.HSBC)
-MPF.HSBC.cost <- c(0.0148, 0.0151, 0.0079, 0.0146, 0.0140, 0.0160, 0.0076, 0.0080, 0.0150, 0, 0.0140, 0.0134, 0.0079, 0.0079, 0.0079, 0.0079, 0.0079, 0.0079) / 12
-
-MPF.HSBC.dailyCost <- c(0.0148, 0.0151, 0.0079, 0.0146, 0.0140, 0.0160, 0.0076, 0.0080, 0.0150, 0, 0.0140, 0.0134, 0.0079, 0.0079, 0.0079, 0.0079, 0.0079, 0.0079) / 12 / 21
 
 ```
 
@@ -190,10 +184,6 @@ MPF.HSBC.GE <- monthlyReturn(as.xts(MPF.HSBC$Global.Equity), type="log")
 
 MPF.HSBC.returns <- merge(MPF.HSBC.AP, MPF.HSBC.B, MPF.HSBC.CA, MPF.HSBC.CE, MPF.HSBC.EE, MPF.HSBC.GB, MPF.HSBC.G, MPF.HSBC.HSIT, MPF.HSBC.HKCE, MPF.HSBC.MPFC, MPF.HSBC.NA, MPF.HSBC.S, MPF.HSBC.HSHIT, MPF.HSBC.VCAP, MPF.HSBC.VCB, MPF.HSBC.VCE, MPF.HSBC.VCUS, MPF.HSBC.GE)
 
-# Apply the managment cost in return
-for (col in 1:length(MPF.HSBC.returns[1,])) {
-  MPF.HSBC.returns[,col] <- MPF.HSBC.returns[,col] - MPF.HSBC.cost[col]
-}
 
 monthly <- index(MPF.HSBC.returns)
 
@@ -225,11 +215,6 @@ MPF.HSBC.VCUS <- dailyReturn(as.xts(MPF.HSBC$ValueChoice.US.Equity), type="log")
 MPF.HSBC.GE <- dailyReturn(as.xts(MPF.HSBC$Global.Equity), type="log")
 
 MPF.HSBC.dailyReturns <- merge(MPF.HSBC.AP, MPF.HSBC.B, MPF.HSBC.CA, MPF.HSBC.CE, MPF.HSBC.EE, MPF.HSBC.GB, MPF.HSBC.G, MPF.HSBC.HSIT, MPF.HSBC.HKCE, MPF.HSBC.MPFC, MPF.HSBC.NA, MPF.HSBC.S, MPF.HSBC.HSHIT, MPF.HSBC.VCAP, MPF.HSBC.VCB, MPF.HSBC.VCE, MPF.HSBC.VCUS, MPF.HSBC.GE)
-
-# Apply the managment cost in return
-for (col in 1:length(MPF.HSBC.returns[1,])) {
-  MPF.HSBC.dailyReturns[,col] <- MPF.HSBC.dailyReturns[,col] - MPF.HSBC.dailyCost[col]
-}
 
 
 colnames(MPF.HSBC.dailyReturns) <- c("AP", "B", "CA", "CE", "EE", "GB", "G", "HSIT", "HKCE", "MPFC", "NA", "S", "HSHIT", "VCAP", "VCB", "VCE", "VCUS", "GE")
@@ -272,7 +257,7 @@ MPF.HSBC.RSI.sum <- as.xts(rowSums(MPF.HSBC.RSI.p), order.by = monthly)
 
 ### Train and predict with Long Short Term Memory (LSTM) model
 ```{r warning=FALSE, results="hide", eval=FALSE}
-use_condaenv("tensorflow")
+use_condaenv("tensorflow-cpu")
 use_implementation("tensorflow")
 use_backend("tensorflow")
 
@@ -312,10 +297,10 @@ for (pass in 1:30) {
   use_session_with_seed(seed[pass],FALSE, FALSE)
   
   model <- keras_model_sequential()
-  model %>% layer_lstm(units = 7, return_sequences=TRUE, , 
+  model %>% layer_lstm(units = 64, return_sequences=TRUE, , 
                              input_shape = c(1,1), activation="tanh") %>%
-    layer_lstm(units = 7, activation="tanh", return_sequences=TRUE) %>%
-    layer_lstm(units = 7, activation="tanh") %>%
+    layer_lstm(units = 16, activation="tanh", return_sequences=TRUE) %>%
+    layer_lstm(units = 4, activation="tanh") %>%
     layer_dense(1)
   
   
@@ -354,7 +339,7 @@ for (pass in 1:30) {
       dim(X_test) <- c(length(X_test),1,1)
       
       if (i != length(X) - 1) {
-        history <- model %>% fit(X_train, y_train, validation_data = list(X_test, y_test), epochs=22, batch_size = 64, verbose = 0)
+        history <- model %>% fit(X_train, y_train, validation_data = list(X_test, y_test), epochs=22, batch_size = 64, verbose=0)
         #plot(history,metrics=c('loss'))
       } else {
         history <- model %>% fit(X_train, y_train, epochs=22, batch_size = 64, verbose = 0)
@@ -364,7 +349,7 @@ for (pass in 1:30) {
       input <- X_test
       dim(input) <- c(length(input),1,1)
       
-      return <- model %>% predict(input,batch_size = 128)
+      return <- model %>% predict(input,batch_size = 64)
         
       model %>% reset_states()
       
@@ -392,7 +377,7 @@ for (pass in 1:30) {
 ```
 
 ### Calculate the weight according to predicted return
-```{r warning=FALSE}
+```{r warning=FALSE, results="hide", eval=FALSE}
 MPF.HSBC.w <- MPF.HSBC.returns
 MPF.HSBC.w[,] <- 0
 
@@ -523,7 +508,12 @@ for (row in 1:length(MPF.HSBC.w[, 1])) {
   
   if (row <= 12 || MPF.HSBC.w.sum == MPF.HSBC.w[row, 10] ||
       MPF.HSBC.w.sum < 1e-6 || hedge == TRUE) {
-    MPF.HSBC.p[row, 10] <- 1
+    if (row >= 110) {
+      MPF.HSBC.p[row, 6] <- 0.3
+      MPF.HSBC.p[row, 10] <- 0.7
+    } else {
+      MPF.HSBC.p[row, 10] <- 1
+    }
   } else if (length(which(MPF.HSBC.w[row, ] != 0)) == 1 ||
              min(MPF.HSBC.stock.return[(row-3):row]) < -0.07) {
     if (row >= 110) {
@@ -616,8 +606,8 @@ for (pass in 1:30) {
         quantile(na.omit(MPF.HSBC.stock.return), c(.45))) {
       up <- FALSE
     }
-    
-    if (row > 8 && hedge && 
+
+    if (row > 8 && hedge &&
         MPF.HSBC.stock.return[row] >
           quantile(na.omit(MPF.HSBC.stock.return), c(.45))  &&
         MPF.HSBC.stock.return[row - 2] >
@@ -625,19 +615,24 @@ for (pass in 1:30) {
       hedge <- FALSE
       up <- TRUE
     }
-    
+
     if (row > 8 &&  (MPF.HSBC.stock.return[row] < 0 &&
                     MPF.HSBC.stock.return[row-1] >
                     quantile(na.omit(MPF.HSBC.stock.return), c(.8)))) {
       hedge <- TRUE
     }
-    
+
     MPF.HSBC.w.sum <- sum(MPF.HSBC.w.i[row, ])
 
 
     if (row <= 12 || MPF.HSBC.w.sum == MPF.HSBC.w.i[row, 10] ||
         MPF.HSBC.w.sum < 1e-6 || hedge == TRUE) {
-      MPF.HSBC.p[row, 10] <- 1
+      if (row >= 110) {
+        MPF.HSBC.p[row, 10] <- 0.7
+        MPF.HSBC.p[row, 6] <- 0.3
+      } else {
+        MPF.HSBC.p[row, 10] <- 1
+      }
     } else if (length(which(MPF.HSBC.w.i[row, ] != 0)) == 1 ||
                min(MPF.HSBC.stock.return[(row-3):row]) < -0.07) {
       if (row >= 110) {
@@ -648,7 +643,7 @@ for (pass in 1:30) {
         MPF.HSBC.p[row, ] <- MPF.HSBC.w.i[row, ] / MPF.HSBC.w.sum / 3
         MPF.HSBC.p[row, 10] <- 0.67
       }
-  
+
     } else {
       MPF.HSBC.p[row, ] <- MPF.HSBC.w.i[row, ] / MPF.HSBC.w.sum
     }
@@ -688,7 +683,7 @@ for (pass in 1:30) {
 ```{r warning=FALSE}
 portf.rebal.fm <- Return.portfolio(MPF.HSBC.returns, weight = MPF.portf.weight, geometric=TRUE, rebalance_on = "months")
 mean.annual.return <- mean(do.call(rbind, lapply(split(portf.rebal.fm, "years"), function(x) colMeans(x))) * 12)
-charts.PerformanceSummary(portf.rebal.fm, methods= "ModifiedES", geometric=TRUE, p=.95, main="Sun Life Rainbow MPF Scheme Performance")
+charts.PerformanceSummary(portf.rebal.fm, methods= "ModifiedES", geometric=TRUE, p=.95, main="HSBC SuperTrust Plus MPF Scheme Performance")
 portf.rebal.fm.sharpe <- Return.annualized(portf.rebal.fm, geometric=TRUE) / (StdDev(portf.rebal.fm) * sqrt(12))
 portf.rebal.fm.mean.sharpe <- mean.annual.return / (StdDev(portf.rebal.fm) * sqrt(12))
 rownames(portf.rebal.fm.sharpe) <- "Sharpe Ratio (annualized)"
