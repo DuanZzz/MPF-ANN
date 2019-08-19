@@ -2,7 +2,7 @@
 ### 利用人工類神經網絡提升強積金回報波幅的策略試驗
 Do you believe you can boost your MPF with [Sharpe Ratio](https://www.investopedia.com/terms/s/sharperatio.asp) near 1?   
 Check out the superior MPF fund performance supported by Artifical Neural Network!   
-Preliminary result at [here](https://jchan-gi.github.io/MPF-ANN/index.html)!
+Preliminary result at [here](https://jchan-gi.github.io/MPF-ANN/index.html)!   
 強積金一直被人詬病回報差劣、收費昂貴、經常蝕錢。但是，適當管理自己的退休金，所得回報可大幅高於收費，又可減低風險。   
 你能相信扣減收費後的年回幅年波幅比(夏普比率 - [Sharpe Ratio](https://www.investopedia.com/terms/s/sharperatio.asp))能大於1嗎?   
 你可以在[試驗網頁](https://jchan-gi.github.io/MPF-ANN/index.html)看看如何利用人工類神經網絡調動基金分配以完成上述目標。   
