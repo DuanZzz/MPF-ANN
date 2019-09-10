@@ -19,7 +19,7 @@ making any decisions. Professional financial consultants should recommend produc
 or decisions that suit your needs and objectives.    
 4. My studies are not professional advice and may not be suitable for anyone except myself. 
 
-### Last update: 2019/08/16.
+### Last update: 2019/09/10.
 
 ### The algorithm have been changed significantly on 2019/08/06.
 We removed the VIX condition in our algorithm.   
@@ -28,6 +28,8 @@ Three major outcomes is targeted in our study:
 1. ~8-10% annualized return    
 2. <10% annualized standard deviation (~3% monthly)   
 3. >1 sharpe ratio   
+
+### Monthly installment results available from 2019/09/10.   
 
 ## WARNING: Please read the notification in this section first:   
 This script uses artifical neural network (ANN) model for MPF fund allocation.   
@@ -80,6 +82,15 @@ Sortino Ratio: 0.4469 (MAR = 0%)
 Expected Shortfall: 7.53% loss (0% Risk-free rate, 95% C.I.)   
 Deflated Sharpe Ratio (p-value): 99.93%     
 
+Monthly installment:   
+Total contribution: 337500    
+Latest asset value: 786425.8   
+Mean annual return: 8.50%   
+Annualized Standard Deviation: 10.49%   
+Sharpe Ratio: 0.8107   
+Sortino Ratio: 0.4125 (MAR = 0%)   
+Expected Shortfall: 6.78% loss (0% Risk-free rate, 95% C.I.)   
+
 --------------------------------------------------------------------------------
 
 Benchmark: 50-50 as described in the book written by Mr. Leung   
@@ -93,6 +104,7 @@ Benchmark: 10th strategy by Mr. Leung
 Mean Annual Return: 9.71%   
 Annualized Standard Deviation: 12.71% (StdDev(monthly return) * sqrt(12))   
 Sharpe Ratio: 9.71%/12.71% = 0.764   
+
 
 ## Recommended Parameters
 
@@ -146,7 +158,7 @@ Min_NMMA <- 1e-6
 
 1. Load the price into zoo format
 ```{r warning=FALSE}
-MPF.HSBC <- as.xts(read.zoo("D:/OneDrive/MPF/HSBC SuperTrust Plus/HSBC_MPF_SuperTrustPlus.csv", format="%d/%m/%Y", header=TRUE, na.strings="0", read = read.csv))
+MPF.HSBC <- as.xts(read.zoo("~/MPF/HSBC SuperTrust Plus/HSBC_MPF_SuperTrustPlus.csv", format="%d/%m/%Y", header=TRUE, na.strings="0", read = read.csv))
 daily <- index(MPF.HSBC)
 
 ```
@@ -257,7 +269,7 @@ MPF.HSBC.RSI.sum <- as.xts(rowSums(MPF.HSBC.RSI.p), order.by = monthly)
 
 ### Train and predict with Long Short Term Memory (LSTM) model
 ```{r warning=FALSE, results="hide", eval=FALSE}
-use_condaenv("tensorflow-cpu")
+use_virtualenv("tensorflow")
 use_implementation("tensorflow")
 use_backend("tensorflow")
 
@@ -339,7 +351,7 @@ for (pass in 1:30) {
       dim(X_test) <- c(length(X_test),1,1)
       
       if (i != length(X) - 1) {
-        history <- model %>% fit(X_train, y_train, validation_data = list(X_test, y_test), epochs=22, batch_size = 64, verbose=0)
+        history <- model %>% fit(X_train, y_train, validation_data = list(X_test, y_test), epochs=22, batch_size = 64)#, verbose=0)
         #plot(history,metrics=c('loss'))
       } else {
         history <- model %>% fit(X_train, y_train, epochs=22, batch_size = 64, verbose = 0)
@@ -556,6 +568,7 @@ for (pass in 1:30) {
   MPF.HSBC.w.i[, ] <- MPF.HSBC.w.all[,,pass]
   MPF.HSBC.returns.mat <- as.matrix(MPF.HSBC.w.all[,,pass])
 
+
   for (col in 1:length(MPF.HSBC.w[1,])) {
     MPF.HSBC.w.i[,col] <- (MPF.HSBC.w.i[,col] * (max_return[col] - min_return[col])) + min_return[col]
   }
@@ -623,6 +636,8 @@ for (pass in 1:30) {
     }
 
     MPF.HSBC.w.sum <- sum(MPF.HSBC.w.i[row, ])
+    
+    MPF.HSBC.p[row,] <- 0
 
 
     if (row <= 12 || MPF.HSBC.w.sum == MPF.HSBC.w.i[row, 10] ||
@@ -681,6 +696,7 @@ for (pass in 1:30) {
 
 ### Performance Analysis
 ```{r warning=FALSE}
+
 portf.rebal.fm <- Return.portfolio(MPF.HSBC.returns, weight = MPF.portf.weight, geometric=TRUE, rebalance_on = "months")
 mean.annual.return <- mean(do.call(rbind, lapply(split(portf.rebal.fm, "years"), function(x) colMeans(x))) * 12)
 charts.PerformanceSummary(portf.rebal.fm, methods= "ModifiedES", geometric=TRUE, p=.95, main="HSBC SuperTrust Plus MPF Scheme Performance")
@@ -705,6 +721,54 @@ DSR <- pnorm(((portf.rebal.fm.sharpe/sqrt(12)-SR_zero)*sqrt(length(MPF.HSBC.retu
 
 rownames(DSR) <- "Deflated Sharpe Ratio"
 DSR
+
+```
+
+### Monthly Installment
+```{r warning=FALSE}
+MPF.HSBC.units <- MPF.HSBC.returns
+MPF.HSBC.units[,] <- 0
+
+MPF.monthly.asset <- MPF.HSBC.returns
+MPF.monthly.asset[,] <- 0
+
+MPF.monthly.returns <- as.xts(rowSums(MPF.HSBC.returns), order.by = monthly)
+MPF.monthly.returns[] <- 0
+
+for (row in 1:length(MPF.HSBC.returns[,1])){
+  this.price <- as.matrix(MPF.HSBC[monthly[row]])  
+  MPF.HSBC.units[row,] <- this.price
+  
+  if (row == 1) {
+    last.value <- 1500
+    this.value <- as.numeric((1500/MPF.HSBC[1,10])*this.price[10])
+    MPF.monthly.returns[row] <- log(this.value / last.value)
+    MPF.monthly.asset[row, ] <- (this.value + 1500)/this.price * MPF.portf.weight[row,]
+    last.price <- this.price
+  } else {
+    last.value <- as.numeric(sum(na.fill(last.price * MPF.monthly.asset[row-1,],0)))
+    this.value <- as.numeric(sum(na.fill(this.price * MPF.monthly.asset[row-1,],0)))
+    MPF.monthly.returns[row] <- log(this.value / last.value)
+    MPF.monthly.asset[row, ] <- (this.value + 1500)/this.price * MPF.portf.weight[row,]
+    last.price <- this.price
+  }
+}
+
+total.asset.value <- sum(MPF.monthly.asset[row,] * this.price)
+total.contribution <- 1500 * length(MPF.HSBC.returns[,1])
+
+total.asset.value
+total.contribution
+
+mean.monthly.annual.return <- mean(do.call(rbind, lapply(split(MPF.monthly.returns, "years"), function(x) colMeans(x))) * 12)
+mean.monthly.annual.return
+stddev.monthly <- (StdDev(MPF.monthly.returns) * sqrt(12))
+monthly.installment.sharpe.ratio <- mean.monthly.annual.return / stddev.monthly
+rownames(monthly.installment.sharpe.ratio) <- "Sharpe Ratio (mean annual Nreturn)"
+monthly.installment.sharpe.ratio
+StdDev.annualized(MPF.monthly.returns)
+ES(MPF.monthly.returns, method="historical")
+SortinoRatio(MPF.monthly.returns)
 
 
 ```
