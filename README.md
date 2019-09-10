@@ -18,7 +18,8 @@ to the author only.
 3. All investors shall obtain kind advices from professional financial consultants before
 making any decisions. Professional financial consultants should recommend products 
 or decisions that suit your needs and objectives.    
-4. The author's studies are not professional advice and may not be suitable for anyone except the author. 
+4. The author is not licensed nor professional in the field hence the study are not professional   
+advice and may not be suitable for anyone except the author. 
 5. English version shall be used if any discrepencies exists between English and Chinese version.   
 
 
