@@ -9,17 +9,10 @@ Preliminary result at [here](https://jchan-gi.github.io/MPF-ANN/index.html)!
 
 
 # Disclamier of warranties
-1. The author (jchan-gi) expressly stated that nothing my repositories and webpages
-constitutes any advices or recommendation on investing or allocating assets on any
-stock or financial products.    
-2. No content in the author's study have been prepared with respect to specific personal need
-and investment objects of individuals. All materials reveal to the public are applicable
-to the author only.
-3. All investors shall obtain kind advices from professional financial consultants before
-making any decisions. Professional financial consultants should recommend products 
-or decisions that suit your needs and objectives.    
-4. The author is not licensed nor professional in the field hence the study are not professional   
-advice and may not be suitable for anyone except the author. 
+1. The author (jchan-gi) expressly stated that nothing my repositories and webpages constitutes any advices or recommendation on investing or allocating assets on any stock or financial products.    
+2. No content in the author's study have been prepared with respect to specific personal need and investment objects of individuals. All materials reveal to the public are applicable to the author only.
+3. All investors shall obtain kind advices from professional financial consultants before making any decisions. Professional financial consultants should recommend products or decisions that suit your needs and objectives.    
+4. The author is not licensed nor professional in the field hence the study are not professional advice and may not be suitable for anyone except the author. 
 5. English version shall be used if any discrepencies exists between English and Chinese version.   
 
 
