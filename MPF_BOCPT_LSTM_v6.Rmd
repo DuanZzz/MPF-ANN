@@ -19,9 +19,11 @@ to the author (jchan-gi) only.
 3. All investors shall obtain kind advices from professional financial consultants before
 making any decisions. Professional financial consultants should recommend products 
 or decisions that suit your needs and objectives.    
-4. My studies are not professional advice and may not be suitable for anyone except myself. 
+4. The author is not licensed nor professional in the field hence this studies are not    
+professional advice and may not be suitable for anyone except myself. 
 
-### Last update: 2019/08/19.
+
+### Last update: 2019/09/11.
 
 ### The algorithm have been changed significantly on 2019/08/19.
 We removed the VIX condition in our algorithm.   
@@ -30,6 +32,8 @@ Three major outcomes is targeted in our study:
 1. ~8-10% annualized return    
 2. <10% annualized standard deviation (~3% monthly)   
 3. >1 sharpe ratio   
+
+### Due to extreme volality and manipulated market, the Chinese Equity fund (col = 4) have been manually excluded from calculation with effect from 2019/09/11.   
 
 ## WARNING: Please read the notification in this section first:   
 This script uses artifical neural network (ANN) model for MPF fund allocation.   
@@ -57,9 +61,8 @@ In this example, we will explore artifical neural network to rise the annualized
 
 Artifical Neural Network is a stochastic black-box model. It receives input and output the result by passing weighted values in neurons.   
 Formal definition could be searched on internet.   
-To support our application, we will uses VIX values and Relative Strength Index (RSI) to refine our prices.   
-VIX shows the significant volality in the market;
-While the RSI shows whether a stock/fund overbuy (or oversell) hence overpriced (or underpriced).  
+To support our application, we will uses Relative Strength Index (RSI) (customized period) to refine our prices.   
+The RSI shows whether a stock/fund overbuy (or oversell) hence overpriced (or underpriced).  
 
 In our example, we directly uses  Long-Short Term Memory to train and predict the future price of MPF constitute fund prices.  
 The fund would be finalized by applying penalty based on the result of RSI and VIX.
@@ -81,6 +84,15 @@ Sharpe Ratio (Mean Annual Return): 9.45%/9.16% = 1.031
 Sortino Ratio: 0.5422 (MAR = 0%)  
 Expected Shortfall: 5.57% loss (0% Risk-free rate, 95% C.I.)   
 Deflated Sharpe Ratio (p-value): 99.98%     
+
+Monthly installment:   
+Total contribution: 337500    
+Latest asset value: 873454.6   
+Mean annual return: 9.10%   
+Annualized Standard Deviation: 9.13%   
+Sharpe Ratio: 0.9966   
+Sortino Ratio: 0.5436 (MAR = 0%)   
+Expected Shortfall: 5.56% loss (0% Risk-free rate, 95% C.I.)   
 
 --------------------------------------------------------------------------------
 
@@ -132,7 +144,7 @@ library("fBasics")
 library("quantmod")
 library("PerformanceAnalytics")
 library("keras")
-
+ 
 
 ```
 
@@ -149,8 +161,7 @@ Min_w <- 1e-6
 1. Load the price into zoo format
 ```{r warning=FALSE}
 setwd("~")
-MPF.BOCPT <- as.xts(read.zoo("D:/OneDrive/MPF/BOCPT/BOCPT.csv", format="%d/%m/%Y", header=TRUE, read = read.csv, na.strings="0"))
-
+MPF.BOCPT <- as.xts(read.zoo("MPF/BOCPT/BOCPT.csv", format="%d/%m/%Y", header=TRUE, read = read.csv, na.strings="0"))
 daily <- index(MPF.BOCPT)
 ```
 
@@ -252,7 +263,7 @@ for (row in 1:length(MPF.BOCPT.RSI.p[,col])) {
 
 ### Train and predict with Long Short Term Memory (LSTM) model
 ```{r warning=FALSE, results="hide", eval=FALSE}
-use_condaenv("tensorflow-cpu")
+use_virtualenv("tensorflow")
 use_implementation("tensorflow")
 use_backend("tensorflow")
 
@@ -586,17 +597,17 @@ for (pass in 1:30) {
 
 
     if (row > 8 && MPF.BOCPT.stock.return[row] <
-        quantile(na.omit(MPF.BOCPT.stock.return), c(.40)) &&
+        quantile(na.omit(MPF.BOCPT.stock.return), c(.35)) &&
         MPF.BOCPT.stock.return[row - 3] <
-        quantile(na.omit(MPF.BOCPT.stock.return), c(.50))) {
+        quantile(na.omit(MPF.BOCPT.stock.return), c(.45))) {
       up <- FALSE
     }
     
     if (row > 8 && hedge && 
         MPF.BOCPT.stock.return[row] >
-          quantile(na.omit(MPF.BOCPT.stock.return), c(.50))  &&
+          quantile(na.omit(MPF.BOCPT.stock.return), c(.45))  &&
         MPF.BOCPT.stock.return[row - 3] >
-          quantile(na.omit(MPF.BOCPT.stock.return), c(.40))) {
+          quantile(na.omit(MPF.BOCPT.stock.return), c(.35))) {
       hedge <- FALSE
       up <- TRUE
     }
@@ -610,6 +621,8 @@ for (pass in 1:30) {
     }
 
     MPF.BOCPT.w.sum <- sum(MPF.BOCPT.w.i[row, ])
+    
+    MPF.BOCPT.p[row, ] <- 0
 
 
     if (row <= 12 || MPF.BOCPT.w.sum == MPF.BOCPT.w.i[row, 11] ||
@@ -666,7 +679,7 @@ for (pass in 1:30) {
 ```{r warning=FALSE}
 portf.rebal.fm <- Return.portfolio(MPF.BOCPT.returns, weight = MPF.portf.weight, geometric=TRUE, rebalance_on = "months")
 mean.annual.return <- mean(do.call(rbind, lapply(split(portf.rebal.fm, "years"), function(x) colMeans(x))) * 12)
-charts.PerformanceSummary(portf.rebal.fm, methods= "ModifiedES", geometric=TRUE, p=.95, main="Sun Life Rainbow MPF Scheme Performance")
+charts.PerformanceSummary(portf.rebal.fm, methods= "ModifiedES", geometric=TRUE, p=.95, main="BOCPT MPF Scheme first contribution Performance")
 portf.rebal.fm.sharpe <- Return.annualized(portf.rebal.fm, geometric=TRUE) / (StdDev(portf.rebal.fm) * sqrt(12))
 portf.rebal.fm.mean.sharpe <- mean.annual.return / (StdDev(portf.rebal.fm) * sqrt(12))
 rownames(portf.rebal.fm.sharpe) <- "Sharpe Ratio (annualized)"
@@ -688,6 +701,55 @@ DSR <- pnorm(((portf.rebal.fm.sharpe/sqrt(12)-SR_zero)*sqrt(length(MPF.BOCPT.ret
 
 rownames(DSR) <- "Deflated Sharpe Ratio"
 DSR
+
+
+```
+
+### Monthly Installment
+```{r warning=FALSE}
+MPF.BOCPT.units <- MPF.BOCPT.returns
+MPF.BOCPT.units[,] <- 0
+
+MPF.monthly.asset <- MPF.BOCPT.returns
+MPF.monthly.asset[,] <- 0
+
+MPF.monthly.returns <- as.xts(rowSums(MPF.BOCPT.returns), order.by = monthly)
+MPF.monthly.returns[] <- 0
+
+for (row in 1:length(MPF.BOCPT.returns[,1])){
+  this.price <- as.matrix(MPF.BOCPT[monthly[row]])  
+  MPF.BOCPT.units[row,] <- this.price
+  
+  if (row == 1) {
+    last.value <- 1500
+    this.value <- as.numeric((1500/MPF.BOCPT[1,10])*this.price[10])
+    MPF.monthly.returns[row] <- log(this.value / last.value)
+    MPF.monthly.asset[row, ] <- (this.value + 1500)/this.price * MPF.portf.weight[row,]
+    last.price <- this.price
+  } else {
+    last.value <- as.numeric(sum(na.fill(last.price * MPF.monthly.asset[row-1,],0)))
+    this.value <- as.numeric(sum(na.fill(this.price * MPF.monthly.asset[row-1,],0)))
+    MPF.monthly.returns[row] <- log(this.value / last.value)
+    MPF.monthly.asset[row, ] <- (this.value + 1500)/this.price * MPF.portf.weight[row,]
+    last.price <- this.price
+  }
+}
+
+total.asset.value <- sum(MPF.monthly.asset[row,] * this.price)
+total.contribution <- 1500 * length(MPF.BOCPT.returns[,1])
+
+total.asset.value
+total.contribution
+
+mean.monthly.annual.return <- mean(do.call(rbind, lapply(split(MPF.monthly.returns, "years"), function(x) colMeans(x))) * 12)
+mean.monthly.annual.return
+stddev.monthly <- (StdDev(MPF.monthly.returns) * sqrt(12))
+monthly.installment.sharpe.ratio <- mean.monthly.annual.return / stddev.monthly
+rownames(monthly.installment.sharpe.ratio) <- "Sharpe Ratio (mean annual return)"
+monthly.installment.sharpe.ratio
+StdDev.annualized(MPF.monthly.returns)
+ES(MPF.monthly.returns, method="historical")
+SortinoRatio(MPF.monthly.returns)
 
 
 ```
