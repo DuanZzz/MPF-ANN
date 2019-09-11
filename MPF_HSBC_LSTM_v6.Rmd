@@ -17,9 +17,10 @@ to the author (jchan-gi) only.
 3. All investors shall obtain kind advices from professional financial consultants before
 making any decisions. Professional financial consultants should recommend products 
 or decisions that suit your needs and objectives.    
-4. My studies are not professional advice and may not be suitable for anyone except myself. 
+4. The author is not licensed nor professional in the field hence this studies are not 
+professional advice and may not be suitable for anyone except myself. 
 
-### Last update: 2019/09/10.
+### Last update: 2019/09/11.
 
 ### The algorithm have been changed significantly on 2019/08/06.
 We removed the VIX condition in our algorithm.   
@@ -30,6 +31,8 @@ Three major outcomes is targeted in our study:
 3. >1 sharpe ratio   
 
 ### Monthly installment results available from 2019/09/10.   
+
+### Due to extreme volality and manipulated market, the Chinese Equity fund (col = 4) have been manually excluded from calculation with effect from 2019/09/11.
 
 ## WARNING: Please read the notification in this section first:   
 This script uses artifical neural network (ANN) model for MPF fund allocation.   
@@ -57,9 +60,8 @@ In this example, we will explore artifical neural network to rise the annualized
 
 Artifical Neural Network is a stochastic black-box model. It receives input and output the result by passing weighted values in neurons.   
 Formal definition could be searched on internet.   
-To support our application, we will uses VIX values and Relative Strength Index (RSI) to refine our prices.   
-VIX shows the significant volality in the market;
-While the RSI shows whether a stock/fund overbuy (or oversell) hence overpriced (or underpriced).  
+To support our application, we will uses Relative Strength Index (RSI) with customized periods to refine our prices.   
+RSI shows whether a stock/fund overbuy (or oversell) hence overpriced (or underpriced).  
 
 In our example, we directly uses Long-Short Term Memory to train and predict the future price of MPF constitute fund prices.  
 The fund would be finalized by applying penalty based on the result of RSI and VIX.
@@ -74,22 +76,22 @@ Notice that it is impossible since MPF price are uploaded 1 business day, also r
 
 Using Top 2 Performers in LSTM ANN (Lastest rebalance date: 2019/07/31)  
 
-Annualized Return: ~10.54%      
-Mean Annual Return: ~10.42%   
-Annualized Standard Deviation: ~11.99% (StdDev(monthly return) * sqrt(12))   
-Sharpe Ratio (Mean Annual Return): 10.42%/11.99% = 0.8693   
-Sortino Ratio: 0.4469 (MAR = 0%)  
-Expected Shortfall: 7.53% loss (0% Risk-free rate, 95% C.I.)   
-Deflated Sharpe Ratio (p-value): 99.93%     
+Annualized Return: ~11.18%      
+Mean Annual Return: ~11.00%   
+Annualized Standard Deviation: ~10.82% (StdDev(monthly return) * sqrt(12))   
+Sharpe Ratio (Mean Annual Return): 11.18%/10.82% = 1.017   
+Sortino Ratio: 0.5390 (MAR = 0%)  
+Expected Shortfall: 6.59% loss (0% Risk-free rate, 95% C.I.)   
+Deflated Sharpe Ratio (p-value): 99.94%     
 
 Monthly installment:   
 Total contribution: 337500    
-Latest asset value: 786425.8   
-Mean annual return: 8.50%   
-Annualized Standard Deviation: 10.49%   
-Sharpe Ratio: 0.8107   
-Sortino Ratio: 0.4125 (MAR = 0%)   
-Expected Shortfall: 6.78% loss (0% Risk-free rate, 95% C.I.)   
+Latest asset value: 1058005   
+Mean annual return: 10.59%   
+Annualized Standard Deviation: 10.92%   
+Sharpe Ratio: 0.9693   
+Sortino Ratio: 0.5216 (MAR = 0%)   
+Expected Shortfall: 6.77% loss (0% Risk-free rate, 95% C.I.)   
 
 --------------------------------------------------------------------------------
 
@@ -467,6 +469,10 @@ for (row in 1:length(MPF.HSBC.w[, 1])) {
         i <- i + 1
       }
       
+      if (col == 4) {
+        MPF.HSBC.w[row, col] <- 0
+      }
+      
       if (MPF.HSBC.w[row, col] < 1e-6) {
         MPF.HSBC.w[row, col] <- 0
       }
@@ -492,17 +498,17 @@ for (row in 1:length(MPF.HSBC.w[, 1])) {
 
   
   if (row > 8 && MPF.HSBC.stock.return[row] <
-      quantile(na.omit(MPF.HSBC.stock.return), c(.35)) &&
-      MPF.HSBC.stock.return[row - 2] <
-      quantile(na.omit(MPF.HSBC.stock.return), c(.45))) {
+      quantile(na.omit(MPF.HSBC.stock.return), c(.40)) &&
+      MPF.HSBC.stock.return[row - 3] <
+      quantile(na.omit(MPF.HSBC.stock.return), c(.50))) {
     up <- FALSE
   }
   
   if (row > 8 && hedge && 
       MPF.HSBC.stock.return[row] >
-        quantile(na.omit(MPF.HSBC.stock.return), c(.45))  &&
-      MPF.HSBC.stock.return[row - 2] >
-        quantile(na.omit(MPF.HSBC.stock.return), c(.35))) {
+        quantile(na.omit(MPF.HSBC.stock.return), c(.50))  &&
+      MPF.HSBC.stock.return[row - 3] >
+        quantile(na.omit(MPF.HSBC.stock.return), c(.40))) {
     hedge <- FALSE
     up <- TRUE
   }
@@ -556,7 +562,7 @@ for (row in 1:length(MPF.HSBC.w[, 1])) {
   MPF.portf.drawdown <- Drawdowns(MPF.portf.return,
                                   geometric = TRUE)
 
-  if (tail(na.omit(MPF.portf.drawdown), 1) < -0.05 &&
+  if (tail(na.omit(MPF.portf.drawdown), 1) < -0.065 &&
       up == FALSE) {
     hedge = TRUE
   }
@@ -591,6 +597,10 @@ for (pass in 1:30) {
           MPF.HSBC.stock.mean + MPF.HSBC.returns.mat[row, col]
         i <- i + 1
       }
+      
+      if (col == 4) {
+        MPF.HSBC.w[row, col] <- 0
+      }
 
       if (MPF.HSBC.w.i[row, col] < 1e-6) {
         MPF.HSBC.w.i[row, col] <- 0
@@ -614,17 +624,17 @@ for (pass in 1:30) {
     #print("segment 1")
 
     if (row > 8 && MPF.HSBC.stock.return[row] <
-        quantile(na.omit(MPF.HSBC.stock.return), c(.35)) &&
-        MPF.HSBC.stock.return[row - 2] <
-        quantile(na.omit(MPF.HSBC.stock.return), c(.45))) {
+        quantile(na.omit(MPF.HSBC.stock.return), c(.40)) &&
+        MPF.HSBC.stock.return[row - 3] <
+        quantile(na.omit(MPF.HSBC.stock.return), c(.50))) {
       up <- FALSE
     }
 
     if (row > 8 && hedge &&
         MPF.HSBC.stock.return[row] >
-          quantile(na.omit(MPF.HSBC.stock.return), c(.45))  &&
-        MPF.HSBC.stock.return[row - 2] >
-          quantile(na.omit(MPF.HSBC.stock.return), c(.35))) {
+          quantile(na.omit(MPF.HSBC.stock.return), c(.50))  &&
+        MPF.HSBC.stock.return[row - 3] >
+          quantile(na.omit(MPF.HSBC.stock.return), c(.40))) {
       hedge <- FALSE
       up <- TRUE
     }
@@ -636,7 +646,7 @@ for (pass in 1:30) {
     }
 
     MPF.HSBC.w.sum <- sum(MPF.HSBC.w.i[row, ])
-    
+
     MPF.HSBC.p[row,] <- 0
 
 
@@ -678,7 +688,7 @@ for (pass in 1:30) {
     MPF.portf.return[row] <- tail(na.omit(portf.rebal.fm), 1)
     MPF.portf.drawdown <- Drawdowns(MPF.portf.return,
                                   geometric = TRUE)
-    if (row > 12 && tail(na.omit(MPF.portf.drawdown), 1) < -0.05 &&
+    if (row > 12 && tail(na.omit(MPF.portf.drawdown), 1) < -0.065 &&
         up == FALSE) {
       hedge = TRUE
     }
@@ -699,11 +709,11 @@ for (pass in 1:30) {
 
 portf.rebal.fm <- Return.portfolio(MPF.HSBC.returns, weight = MPF.portf.weight, geometric=TRUE, rebalance_on = "months")
 mean.annual.return <- mean(do.call(rbind, lapply(split(portf.rebal.fm, "years"), function(x) colMeans(x))) * 12)
-charts.PerformanceSummary(portf.rebal.fm, methods= "ModifiedES", geometric=TRUE, p=.95, main="HSBC SuperTrust Plus MPF Scheme Performance")
+charts.PerformanceSummary(portf.rebal.fm, methods= "ModifiedES", geometric=TRUE, p=.95, main="HSBC SuperTrust Plus MPF Scheme First Contribution Performance")
 portf.rebal.fm.sharpe <- Return.annualized(portf.rebal.fm, geometric=TRUE) / (StdDev(portf.rebal.fm) * sqrt(12))
 portf.rebal.fm.mean.sharpe <- mean.annual.return / (StdDev(portf.rebal.fm) * sqrt(12))
 rownames(portf.rebal.fm.sharpe) <- "Sharpe Ratio (annualized)"
-rownames(portf.rebal.fm.mean.sharpe) <- "Sharpe Ratio (mean annual Nreturn)"
+rownames(portf.rebal.fm.mean.sharpe) <- "Sharpe Ratio (mean annual return)"
 colnames(portf.rebal.fm.mean.sharpe) <- "portfolio.returns"
 Return.annualized(portf.rebal.fm, geometric=TRUE)
 mean.annual.return
@@ -764,7 +774,7 @@ mean.monthly.annual.return <- mean(do.call(rbind, lapply(split(MPF.monthly.retur
 mean.monthly.annual.return
 stddev.monthly <- (StdDev(MPF.monthly.returns) * sqrt(12))
 monthly.installment.sharpe.ratio <- mean.monthly.annual.return / stddev.monthly
-rownames(monthly.installment.sharpe.ratio) <- "Sharpe Ratio (mean annual Nreturn)"
+rownames(monthly.installment.sharpe.ratio) <- "Sharpe Ratio (mean annual return)"
 monthly.installment.sharpe.ratio
 StdDev.annualized(MPF.monthly.returns)
 ES(MPF.monthly.returns, method="historical")
