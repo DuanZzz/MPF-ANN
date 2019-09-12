@@ -88,6 +88,7 @@ Monthly installment:
 Total contribution: 337500    
 Latest asset value: 1205398   
 Mean annual return: 11.44%   
+Internal Rate of Return (IRR): 11.52%    
 Annualized Standard Deviation: 12.01%   
 Sharpe Ratio: 0.9523   
 Sortino Ratio: 0.5430 (MAR = 0%)   
@@ -744,6 +745,9 @@ MPF.monthly.asset[,] <- 0
 MPF.monthly.returns <- as.xts(rowSums(MPF.HSBC.returns), order.by = monthly)
 MPF.monthly.returns[] <- 0
 
+MPF.time <- 0:length(MPF.HSBC.returns[,1])/12
+MPF.pay <- 1500 + 0*MPF.time
+
 for (row in 1:length(MPF.HSBC.returns[,1])){
   this.price <- as.matrix(MPF.HSBC[monthly[row]])  
   MPF.HSBC.units[row,] <- this.price
@@ -766,11 +770,17 @@ for (row in 1:length(MPF.HSBC.returns[,1])){
 total.asset.value <- sum(MPF.monthly.asset[row,] * this.price)
 total.contribution <- 1500 * length(MPF.HSBC.returns[,1])
 
+MPF.pay[row+1] <- -total.asset.value
+IRR.f <- function(r) sum(MPF.pay*exp(-r*MPF.time))
+IRR.root <- uniroot(IRR.f, c(0,1))
+
 total.asset.value
 total.contribution
 
+
 mean.monthly.annual.return <- mean(do.call(rbind, lapply(split(MPF.monthly.returns, "years"), function(x) colMeans(x))) * 12)
 mean.monthly.annual.return
+IRR.root$root
 stddev.monthly <- (StdDev(MPF.monthly.returns) * sqrt(12))
 monthly.installment.sharpe.ratio <- mean.monthly.annual.return / stddev.monthly
 rownames(monthly.installment.sharpe.ratio) <- "Sharpe Ratio (mean annual return)"

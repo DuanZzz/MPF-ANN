@@ -32,7 +32,7 @@ Three major outcomes is targeted in our study:
 
 ### Monthly installment results available from 2019/09/12.   
 
-### Due to extreme volality and manipulated market, the Chinese Tracker fund (col = 4) have been manually excluded from calculation with effect from 2019/09/12.   
+### Due to extreme volality and manipulated market, the Chinese Tracker fund (col = 4) have been manually excluded from calculation with effect from 2019/09/12.  
 
 ## WARNING: Please read the notification in this section first:   
 This script uses artifical neural network (ANN) model for MPF fund allocation.   
@@ -88,10 +88,11 @@ Monthly installment:
 Total contribution: 337500    
 Latest asset value: 920552    
 Mean annual return: 9.05%      
+Internal Rate of Return (IRR): 9.33%    
 Annualized Standard Deviation: 8.79%    
 Sharpe Ratio: 1.0304    
 Sortino Ratio: 0.6454 (MAR = 0%)    
-Expected Shortfall: 4.57% loss (0% Risk-free rate, 95% C.I.)    
+Expected Shortfall: 4.57% loss (0% Risk-free rate, 95% C.I.)     
 
 --------------------------------------------------------------------------------
 
@@ -724,6 +725,9 @@ MPF.monthly.asset[,] <- 0
 MPF.monthly.returns <- as.xts(rowSums(MPF.BCT.returns), order.by = monthly)
 MPF.monthly.returns[] <- 0
 
+MPF.time <- 0:length(MPF.BCT.returns[,1])/12
+MPF.pay <- -1500 + 0*MPF.time
+
 for (row in 1:length(MPF.BCT.returns[,1])){
   this.price <- as.matrix(MPF.BCT[monthly[row]])  
   MPF.BCT.units[row,] <- this.price
@@ -743,14 +747,22 @@ for (row in 1:length(MPF.BCT.returns[,1])){
   }
 }
 
+
 total.asset.value <- sum(MPF.monthly.asset[row,] * this.price)
 total.contribution <- 1500 * length(MPF.BCT.returns[,1])
+
+MPF.pay[row+1] <- total.asset.value
+IRR.f <- function(r) sum(MPF.pay*exp(-r*MPF.time))
+IRR.root <- uniroot(IRR.f, c(0,1))
+
 
 total.asset.value
 total.contribution
 
 mean.monthly.annual.return <- mean(do.call(rbind, lapply(split(MPF.monthly.returns, "years"), function(x) colMeans(x))) * 12)
 mean.monthly.annual.return
+IRR.root$root
+
 stddev.monthly <- (StdDev(MPF.monthly.returns) * sqrt(12))
 monthly.installment.sharpe.ratio <- mean.monthly.annual.return / stddev.monthly
 rownames(monthly.installment.sharpe.ratio) <- "Sharpe Ratio (mean annual return)"
