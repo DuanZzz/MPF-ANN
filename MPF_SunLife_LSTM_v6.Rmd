@@ -22,7 +22,7 @@ or decisions that suit your needs and objectives.
 4. The author is not licensed nor professional in the field hence this studies are not 
 professional advice and may not be suitable for anyone except myself. 
 
-### Last update: 2019/09/10.
+### Last update: 2019/09/15.
 
 ### The algorithm have been changed significantly on 2019/08/06.
 We removed the VIX condition in our algorithm.   
@@ -77,22 +77,22 @@ Notice that it is impossible since MPF price are uploaded 1 business day, also r
 
 Using Top 2 Performers in LSTM ANN (Lastest rebalance date: 2019/07/31):  
 
-Annualized Return: ~12.40%   
-Mean Annual Return: ~11.59%   
-Annualized Standard Deviation: ~9.96% (StdDev(monthly return) * sqrt(12))    
-Sharpe Ratio (Mean Annual Return): 11.59%/9.96% = 1.1633   
-Sortino Ratio: 0.7385 (MAR = 0%)  
+Annualized Return: ~12.00%   
+Mean Annual Return: ~11.24%   
+Annualized Standard Deviation: ~9.84% (StdDev(monthly return) * sqrt(12))    
+Sharpe Ratio (Mean Annual Return): 11.24%/9.84% = 1.1425   
+Sortino Ratio: 0.7162 (MAR = 0%)  
 Expected Shortfall: 5.47% loss (0% Risk-free rate, 95% C.I.)   
 Deflated Sharpe Ratio (p-value): >99.999%     
 
 Monthly installment:   
 Total contribution: 324000       
-Latest asset value: 1130945      
-Mean annual return: 11.64%    
-Internal Rate of Return (IRR): 11.81%    
-Annualized Standard Deviation: 9.96%    
-Sharpe Ratio: 1.169      
-Sortino Ratio: 0.7421 (MAR = 0%)   
+Latest asset value: 1105069      
+Mean annual return: 11.29%    
+Internal Rate of Return (IRR): 11.62%    
+Annualized Standard Deviation: 9.83%    
+Sharpe Ratio: 1.1486      
+Sortino Ratio: 0.7199 (MAR = 0%)   
 Expected Shortfall: 5.46% loss (0% Risk-free rate, 95% C.I.)   
 
 --------------------------------------------------------------------------------
@@ -261,15 +261,21 @@ MPF.SunLife.w.all <- array(MPF.SunLife.returns,
 MPF.SunLife.period <- length(MPF.SunLife.w.all[,1,1])
 MPF.SunLife.w.all[,,] <- 0
 
-max_return <- colMaxs(MPF.SunLife.returns)
-min_return <- colMins(MPF.SunLife.returns)
+max_return <- c()
+min_return <- c()
+for (col in 1:length(MPF.SunLife.returns[1,])) {
+  max_return[col] <- max(na.omit(MPF.SunLife.returns[,col]))
+  min_return[col] <- min(na.omit(MPF.SunLife.returns[,col]))
+}
+
 
 MPF.SunLife.returns_normalized <- MPF.SunLife.returns
 MPF.SunLife.returns_normalized[,] <- 0
 
 for (col in 1:length(MPF.SunLife.returns[1,])) {
-  MPF.SunLife.returns_normalized[,col] <- (MPF.SunLife.returns[,col] - min_return[col]) / (max_return[col] - min_return[col])
+  MPF.SunLife.returns_normalized[,col] <- ((MPF.SunLife.returns[,col] - min_return[col]) / (max_return[col] - min_return[col])) * 2 - 1
 }
+
 
 temp <- as.matrix(MPF.SunLife.returns_normalized)
 colNum <- 1:length(MPF.SunLife.returns_normalized[1,])
@@ -378,8 +384,9 @@ MPF.SunLife.w <- MPF.SunLife.returns
 MPF.SunLife.w[,] <- 0
 
 MPF.SunLife.w <- rowAvgs(MPF.SunLife.w.all, dims=2)
+MPF.SunLife.w[MPF.SunLife.w==0] <- NA
 for (col in 1:length(MPF.SunLife.w[1,])) {
-  MPF.SunLife.w[,col] <- (MPF.SunLife.w[,col] * (max_return[col] - min_return[col])) + min_return[col]
+  MPF.SunLife.w[,col] <- ((1+MPF.SunLife.w[,col]) * (max_return[col] - min_return[col]))/2 + min_return[col]
 }
 
 
@@ -527,6 +534,16 @@ for (row in 1:length(MPF.SunLife.w[, 1])) {
       MPF.SunLife.p[row, 11] <- 0.67
     }
 
+  # } else if (mean(MPF.SunLife.stock.return[(row-3):row]) < -0.003) {
+  #   if (row >= 102) {
+  #     MPF.SunLife.p[row, ] <- MPF.SunLife.w[row, ] / MPF.SunLife.w.sum / 2
+  #     MPF.SunLife.p[row, 7] <- 0.18
+  #     MPF.SunLife.p[row, 11] <- 0.32    
+  #   } else {
+  #     MPF.SunLife.p[row, ] <- MPF.SunLife.w[row, ] / MPF.SunLife.w.sum / 2
+  #     MPF.SunLife.p[row, 11] <- 0.5
+  #   }
+
   } else {
     MPF.SunLife.p[row, ] <- MPF.SunLife.w[row, ] / MPF.SunLife.w.sum
   }
@@ -554,6 +571,11 @@ for (row in 1:length(MPF.SunLife.w[, 1])) {
 for (pass in 1:30) {
   MPF.SunLife.w.i <- MPF.SunLife.w
   MPF.SunLife.w.i[, ] <- MPF.SunLife.w.all[,,pass]
+
+  for (col in 1:length(MPF.SunLife.w[1,])) {
+    MPF.SunLife.w.i[,col] <- ((1+MPF.SunLife.w.i[,col]) * (max_return[col] - min_return[col]))/2 + min_return[col]
+  }
+
   MPF.SunLife.stock.return[] <- NA
   MPF.portf.return[] <- 0
 
@@ -640,6 +662,15 @@ for (pass in 1:30) {
         MPF.SunLife.p[row, ] <- MPF.SunLife.w.i[row, ] / MPF.SunLife.w.sum / 3
         MPF.SunLife.p[row, 11] <- 0.67
       }
+    # } else if (mean(MPF.SunLife.stock.return[(row-3):row]) < -0.0035) {
+    #   if (row >= 102) {
+    #     MPF.SunLife.p[row, ] <- MPF.SunLife.w.i[row, ] / MPF.SunLife.w.sum / 2
+    #     MPF.SunLife.p[row, 7] <- 0.18
+    #     MPF.SunLife.p[row, 11] <- 0.32
+    #   } else {
+    #     MPF.SunLife.p[row, ] <- MPF.SunLife.w.i[row, ] / MPF.SunLife.w.sum / 2
+    #     MPF.SunLife.p[row, 11] <- 0.5
+    #   }
     } else {
       MPF.SunLife.p[row, ] <- MPF.SunLife.w.i[row, ] / MPF.SunLife.w.sum
     }
