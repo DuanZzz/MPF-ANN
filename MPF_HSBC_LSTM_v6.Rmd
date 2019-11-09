@@ -74,25 +74,25 @@ Notice that it is impossible since MPF price are uploaded 1 business day, also r
 
 ### Results
 
-Using Top 2 Performers in LSTM ANN (Lastest rebalance date: 2019/07/31)  
+Using Top 2 Performers in LSTM ANN (Lastest rebalance date: 2019/09/30)  
 
-Annualized Return: ~12.20%      
-Mean Annual Return: ~11.98%   
-Annualized Standard Deviation: ~11.87% (StdDev(monthly return) * sqrt(12))   
-Sharpe Ratio (Mean Annual Return): 11.98%/11.87% = 1.008   
-Sortino Ratio: 0.5695 (MAR = 0%)  
-Expected Shortfall: 6.67% loss (0% Risk-free rate, 95% C.I.)   
-Deflated Sharpe Ratio (p-value): 99.98%     
+Annualized Return: ~11.65%      
+Mean Annual Return: ~11.52%   
+Annualized Standard Deviation: ~11.44% (StdDev(monthly return) * sqrt(12))   
+Sharpe Ratio (Mean Annual Return): 11.52%/11.44% = 1.0071   
+Sortino Ratio: 0.5589 (MAR = 0%)  
+Expected Shortfall: 6.51% loss (0% Risk-free rate, 95% C.I.)   
+Deflated Sharpe Ratio (p-value): 99.995%     
 
 Monthly installment:   
-Total contribution: 337500    
-Latest asset value: 1205398   
-Mean annual return: 11.44%   
-Internal Rate of Return (IRR): 11.52%    
-Annualized Standard Deviation: 12.01%   
-Sharpe Ratio: 0.9523   
-Sortino Ratio: 0.5430 (MAR = 0%)   
-Expected Shortfall: 6.93% loss (0% Risk-free rate, 95% C.I.)   
+Total contribution: 339000    
+Latest asset value: 1142500   
+Mean annual return: 11.11%   
+Internal Rate of Return (IRR): 11.01%    
+Annualized Standard Deviation: 11.46%   
+Sharpe Ratio: 0.9696   
+Sortino Ratio: 0.5534 (MAR = 0%)   
+Expected Shortfall: 6.50% loss (0% Risk-free rate, 95% C.I.)   
 
 --------------------------------------------------------------------------------
 
@@ -125,15 +125,19 @@ Sharpe Ratio: 9.71%/12.71% = 0.764
 
 1. Install necessary packages
 ```{r warning=FALSE, results="hide", eval=FALSE}
-r = getOption("repos")
-r["CRAN"] = "https://mran.revolutionanalytics.com/snapshot/2019-06-01"
-options(repos = r)
+#r = getOption("repos")
+#r["CRAN"] = "https://mran.revolutionanalytics.com/snapshot/2019-09-01"
+#options(repos = r)
 install.packages("zoo")
 install.packages("xts")
 install.packages("fBasics")
 install.packages("quantmod")
 install.packages("PerformanceAnalytics")
+install.packages("devtools")
+#library(devtools)
 install.packages("keras")
+
+
 
 ```
 
@@ -177,7 +181,6 @@ MPF.HSBC.RSI <- as.xts(MPF.HSBC.RSI, order.by = daily)
 
 3. Calculate Returns
 ```{r warning=FALSE}
-
 MPF.HSBC.AP <- monthlyReturn(as.xts(MPF.HSBC$Asia.Pacific.Equity.Fund), type="log")
 MPF.HSBC.B <- monthlyReturn(as.xts(MPF.HSBC$Balanced.Fund), type="log")
 MPF.HSBC.CA <- monthlyReturn(as.xts(MPF.HSBC$Core.Accumulation.Fund), type="log")
@@ -201,6 +204,8 @@ MPF.HSBC.returns <- merge(MPF.HSBC.AP, MPF.HSBC.B, MPF.HSBC.CA, MPF.HSBC.CE, MPF
 
 
 monthly <- index(MPF.HSBC.returns)
+monthly.new <- length(monthly)
+monthly.existing <- length(index(MPF.portf.weight))
 
 colnames(MPF.HSBC.returns) <- c("AP", "B", "CA", "CE", "EE", "GB", "G", "HSIT", "HKCE", "MPFC", "NA", "S", "HSHIT", "VCAP", "VCB", "VCE", "VCUS", "GE")
 
@@ -209,34 +214,6 @@ rm(MPF.HSBC.AP, MPF.HSBC.B, MPF.HSBC.CA, MPF.HSBC.CE, MPF.HSBC.EE, MPF.HSBC.G, M
    MPF.HSBC.VCAP, MPF.HSBC.VCB, MPF.HSBC.VCE, MPF.HSBC.VCUS, MPF.HSBC.GE)
 
 
-
-MPF.HSBC.AP <- dailyReturn(as.xts(MPF.HSBC$Asia.Pacific.Equity.Fund), type="log")
-MPF.HSBC.B <- dailyReturn(as.xts(MPF.HSBC$Balanced.Fund), type="log")
-MPF.HSBC.CA <- dailyReturn(as.xts(MPF.HSBC$Core.Accumulation.Fund), type="log")
-MPF.HSBC.CE <- dailyReturn(as.xts(MPF.HSBC$China.Equity.Fund), type="log")
-MPF.HSBC.EE <- dailyReturn(as.xts(MPF.HSBC$European.Equity.Fund), type="log")
-MPF.HSBC.G <- dailyReturn(as.xts(MPF.HSBC$Growth.Fund), type="log")
-MPF.HSBC.GB <- dailyReturn(as.xts(MPF.HSBC$Global.Bond.Fund), type="log")
-MPF.HSBC.HSIT <- dailyReturn(as.xts(MPF.HSBC$Hang.Seng.Index.Tracking.Fund), type="log")
-MPF.HSBC.HKCE <- dailyReturn(as.xts(MPF.HSBC$Hong.Kong.and.Chinese.Equity.Fund), type="log")
-MPF.HSBC.MPFC <- dailyReturn(as.xts(MPF.HSBC$MPF.Conservative.Fund), type="log")
-MPF.HSBC.NA <- dailyReturn(as.xts(MPF.HSBC$North.American.Equity.Fund), type="log")
-MPF.HSBC.S <- dailyReturn(as.xts(MPF.HSBC$Stable.Fund), type="log")
-MPF.HSBC.HSHIT <- dailyReturn(as.xts(MPF.HSBC$HSI.H.Share), type="log")
-MPF.HSBC.VCAP <- dailyReturn(as.xts(MPF.HSBC$ValueChoice.Asia.Pacific), type="log")
-MPF.HSBC.VCB <- dailyReturn(as.xts(MPF.HSBC$ValueChoice.Balanced), type="log")
-MPF.HSBC.VCE <- dailyReturn(as.xts(MPF.HSBC$ValueChoice.European), type="log")
-MPF.HSBC.VCUS <- dailyReturn(as.xts(MPF.HSBC$ValueChoice.US.Equity), type="log")
-MPF.HSBC.GE <- dailyReturn(as.xts(MPF.HSBC$Global.Equity), type="log")
-
-MPF.HSBC.dailyReturns <- merge(MPF.HSBC.AP, MPF.HSBC.B, MPF.HSBC.CA, MPF.HSBC.CE, MPF.HSBC.EE, MPF.HSBC.GB, MPF.HSBC.G, MPF.HSBC.HSIT, MPF.HSBC.HKCE, MPF.HSBC.MPFC, MPF.HSBC.NA, MPF.HSBC.S, MPF.HSBC.HSHIT, MPF.HSBC.VCAP, MPF.HSBC.VCB, MPF.HSBC.VCE, MPF.HSBC.VCUS, MPF.HSBC.GE)
-
-
-colnames(MPF.HSBC.dailyReturns) <- c("AP", "B", "CA", "CE", "EE", "GB", "G", "HSIT", "HKCE", "MPFC", "NA", "S", "HSHIT", "VCAP", "VCB", "VCE", "VCUS", "GE")
-
-rm(MPF.HSBC.AP, MPF.HSBC.B, MPF.HSBC.CA, MPF.HSBC.CE, MPF.HSBC.EE, MPF.HSBC.G, MPF.HSBC.GB,
-   MPF.HSBC.HKCE, MPF.HSBC.HSIT, MPF.HSBC.MPFC, MPF.HSBC.NA, MPF.HSBC.S, MPF.HSBC.HSHIT, 
-   MPF.HSBC.VCAP, MPF.HSBC.VCB, MPF.HSBC.VCE, MPF.HSBC.VCUS, MPF.HSBC.GE)
 ```
 
 ### Calculate average RSI of the month, and then adjustment factor
@@ -272,24 +249,35 @@ MPF.HSBC.RSI.sum <- as.xts(rowSums(MPF.HSBC.RSI.p), order.by = monthly)
 
 ### Train and predict with Long Short Term Memory (LSTM) model
 ```{r warning=FALSE, results="hide", eval=FALSE}
-use_virtualenv("tensorflow")
+
+use_python("~/tensorflow_v1/bin/python")
 use_implementation("tensorflow")
 use_backend("tensorflow")
+X_old <- length()
 
 
+MPF.HSBC.w.all.backup <- MPF.HSBC.w.all
 MPF.HSBC.w.all <- array(MPF.HSBC.returns,
-                           c(length(MPF.HSBC.returns[,1]),length(MPF.HSBC.returns[1,]),30))
-MPF.HSBC.period <- length(MPF.HSBC.w.all[,1,1])
+                        c(length(MPF.HSBC.returns[,1]),length(MPF.HSBC.returns[1,]),30))
 MPF.HSBC.w.all[,,] <- 0
+#MPF.HSBC.w.all[1:monthly.existing,,] <- MPF.HSBC.w.all.backup
 
-max_return <- colMaxs(MPF.HSBC.returns)
-min_return <- colMins(MPF.HSBC.returns)
+#MPF.HSBC.period <- length(MPF.HSBC.w.all[(monthly.existing+1):(monthly.new),1,1])
+MPF.HSBC.period <- length(MPF.HSBC.w.all[,1,1])
+
+max_return <- c()
+min_return <- c()
+
+for (col in 1:length(MPF.HSBC.returns[1,])) {
+  max_return[col] <- max(na.omit(MPF.HSBC.returns[,col]))
+  min_return[col] <- min(na.omit(MPF.HSBC.returns[,col]))
+}
 
 MPF.HSBC.returns_normalized <- MPF.HSBC.returns
 MPF.HSBC.returns_normalized[,] <- 0
 
 for (col in 1:length(MPF.HSBC.returns[1,])) {
-  MPF.HSBC.returns_normalized[,col] <- (MPF.HSBC.returns[,col] - min_return[col]) / (max_return[col] - min_return[col])
+  MPF.HSBC.returns_normalized[,col] <- ((MPF.HSBC.returns[,col] - min_return[col]) / (max_return[col] - min_return[col])) * 2 - 1
 }
 
 temp <- as.matrix(MPF.HSBC.returns_normalized)
@@ -310,19 +298,22 @@ for (pass in 1:30) {
   
   
   use_session_with_seed(seed[pass],FALSE, FALSE)
+  #tensorflow::tf$random$set_seed(seed[pass])
   
   model <- keras_model_sequential()
-  model %>% layer_lstm(units = 64, return_sequences=TRUE, , 
-                             input_shape = c(1,1), activation="tanh") %>%
-    layer_lstm(units = 16, activation="tanh", return_sequences=TRUE) %>%
-    layer_lstm(units = 4, activation="tanh") %>%
+  model %>% layer_lstm(units = 64, activation="tanh", return_sequences=TRUE, 
+                       input_shape = c(1,1), kernel_initializer =
+                         initializer_glorot_normal(seed[pass])) %>%
+    layer_lstm(units = 16, activation="tanh", return_sequences=TRUE,
+               kernel_initializer = initializer_glorot_normal(seed[pass])) %>%
+    layer_lstm(units = 4, activation="tanh",
+               kernel_initializer = initializer_glorot_normal(seed[pass])) %>%
     layer_dense(1)
   
   
   
   ad <- keras::optimizer_adam(lr = learning)
   model %>% compile(optimizer = ad, loss="mean_squared_error")
-  
   
   for (col in colNum) {
     X <- c()
@@ -333,14 +324,15 @@ for (pass in 1:30) {
     
     
     X <- as.matrix(na.omit(MPF.HSBC.returns_normalized[,col]))
+    #X_old <- length(na.omit(MPF.HSBC.w.all.backup[,col,1]))
     y <- as.matrix(na.omit(lag(na.omit(MPF.HSBC.returns_normalized[,col]), -1)))
     
     predicted <- c()
     len <- 1
     
     
-    for (i in 1:length(X)-1) {
-      
+    #for (i in X_old:(length(X)-1)) {
+    for (i in 1:(length(X)-1)) {
       
       X_train <- X[1:(i)]
       y_train <- y[1:(i)]
@@ -353,41 +345,32 @@ for (pass in 1:30) {
       dim(X_train) <- c(length(X_train),1,1)
       dim(X_test) <- c(length(X_test),1,1)
       
+      ### Now in Batch mode instead of mini-batch
       if (i != length(X) - 1) {
-        history <- model %>% fit(X_train, y_train, validation_data = list(X_test, y_test), epochs=22, batch_size = 64)#, verbose=0)
+        history <- model %>% fit(X_train, y_train, validation_data = list(X_test, y_test), epochs=22, batch_size = i)#, verbose=0)
         #plot(history,metrics=c('loss'))
       } else {
-        history <- model %>% fit(X_train, y_train, epochs=22, batch_size = 64, verbose = 0)
-        
+        history <- model %>% fit(X_train, y_train, epochs=22, batch_size = i, verbose = 0)
       }
       
       input <- X_test
       dim(input) <- c(length(input),1,1)
-      
-      return <- model %>% predict(input,batch_size = 64)
-        
+      return <- model %>% predict(input,batch_size = i)
       model %>% reset_states()
-      
       predicted[len] <- return
       len <- len+1
       
       #plot(model)
-      
-      
     }
-    
-    
-    
     result.length <- len - 1
-    
     for (row in (MPF.HSBC.period - result.length+1) : (MPF.HSBC.period)) {
+      #for (row in (monthly.existing + MPF.HSBC.period - result.length+1) : (monthly.existing + MPF.HSBC.period)) {
       MPF.HSBC.w.all[row, col, pass] <- predicted[(row + result.length - MPF.HSBC.period)]
     }
+    #keras::k_clear_session()
   }
-  #keras::k_clear_session()
+
 }
-
-
 
 ```
 
@@ -397,24 +380,27 @@ MPF.HSBC.w <- MPF.HSBC.returns
 MPF.HSBC.w[,] <- 0
 
 MPF.HSBC.w <- rowAvgs(MPF.HSBC.w.all, dims=2)
+MPF.HSBC.w[MPF.HSBC.w==0] <- NA
 for (col in 1:length(MPF.HSBC.w[1,])) {
-  MPF.HSBC.w[,col] <- (MPF.HSBC.w[,col] * (max_return[col] - min_return[col])) + min_return[col]
+  MPF.HSBC.w[,col] <- ((1+MPF.HSBC.w[,col]) * (max_return[col] - min_return[col]))/2 + min_return[col]
 }
+
 
 
 MPF.portf.weight <- MPF.HSBC.returns
 MPF.portf.weight[, ] <- NA
 MPF.portf.weight.all <- MPF.HSBC.returns
 MPF.portf.weight.all[,] <- NA
+
+
 MPF.HSBC.stock.return <-
-  as.xts(rowSums(MPF.HSBC.RSI.month), order.by = monthly)
+  as.xts(rowSums(MPF.HSBC.returns), order.by = monthly)
 MPF.HSBC.stock.return[] <- NA
 MPF.portf.return <-
-  as.xts(rowSums(MPF.HSBC.RSI.month), order.by = monthly)
+  as.xts(rowSums(MPF.HSBC.returns), order.by = monthly)
 MPF.portf.return[] <- NA
 
 MPF.HSBC.returns.mat <- as.matrix(MPF.HSBC.returns)
-MPF.HSBC.returns.mat[MPF.HSBC.returns.mat == 0] <- NA
 
 MPF.HSBC.p <- as.matrix(MPF.HSBC.returns)
 MPF.HSBC.p[, ] <- 0
@@ -523,6 +509,7 @@ for (row in 1:length(MPF.HSBC.w[, 1])) {
   
   
   MPF.HSBC.w.sum <- sum(MPF.HSBC.w[row, ])
+  MPF.HSBC.p[row,] <- 0
   
   
   if (row <= 12 || MPF.HSBC.w.sum == MPF.HSBC.w[row, 10] ||
@@ -534,20 +521,34 @@ for (row in 1:length(MPF.HSBC.w[, 1])) {
       MPF.HSBC.p[row, 10] <- 1
     }
   } else if (length(which(MPF.HSBC.w[row, ] != 0)) == 1 ||
-             min(MPF.HSBC.stock.return[(row-3):row]) < -0.075) {
+             min(MPF.HSBC.stock.return[(row-3):row]) < -0.075 ) {
     if (row >= 110) {
       MPF.HSBC.p[row, ] <- MPF.HSBC.w[row, ] / MPF.HSBC.w.sum / 3
-      MPF.HSBC.p[row, 10] <- 0.2
-      MPF.HSBC.p[row, 6] <- 0.47
+      MPF.HSBC.p[row, 10] <- MPF.HSBC.p[row,10]+0.2
+      MPF.HSBC.p[row, 6] <- MPF.HSBC.p[row,6]+0.47
     } else {
       MPF.HSBC.p[row, ] <- MPF.HSBC.w[row, ] / MPF.HSBC.w.sum / 3
-      MPF.HSBC.p[row, 10] <- 0.67
+      MPF.HSBC.p[row, 10] <- MPF.HSBC.p[row,10]+0.67
     }
-
+  } else if (mean(MPF.HSBC.stock.return[(row-3):row]) < -0.005) {
+    if (row >= 110) {
+      MPF.HSBC.p[row, ] <- MPF.HSBC.w[row, ] / MPF.HSBC.w.sum / 2
+      MPF.HSBC.p[row, 10] <- MPF.HSBC.p[row,10]+0.32
+      MPF.HSBC.p[row, 6] <- MPF.HSBC.p[row,6]+0.18
+    } else {
+      MPF.HSBC.p[row, ] <- MPF.HSBC.w[row, ] / MPF.HSBC.w.sum / 2
+      MPF.HSBC.p[row, 10] <- MPF.HSBC.p[row,10]+0.5
+    }
   } else {
     MPF.HSBC.p[row, ] <- MPF.HSBC.w[row, ] / MPF.HSBC.w.sum
   }
   
+  # Change NA to VCNA after 2019-07-01
+  
+  if (MPF.HSBC.p[row,11] != 0 && monthly[row] > "2019-07-01") {
+    MPF.HSBC.p[row,17] <- MPF.HSBC.p[row,11]
+    MPF.HSBC.p[row,11] <- 0
+  }
   
   
   MPF.portf.weight[row, ] <- round_percent(MPF.HSBC.p[row, ])
@@ -570,136 +571,150 @@ for (row in 1:length(MPF.HSBC.w[, 1])) {
   
 }
 
-for (pass in 1:30) {
-  MPF.HSBC.w.i <- MPF.HSBC.w
-  MPF.HSBC.w.i[, ] <- MPF.HSBC.w.all[,,pass]
-  MPF.HSBC.returns.mat <- as.matrix(MPF.HSBC.w.all[,,pass])
-
-
-  for (col in 1:length(MPF.HSBC.w[1,])) {
-    MPF.HSBC.w.i[,col] <- (MPF.HSBC.w.i[,col] * (max_return[col] - min_return[col])) + min_return[col]
-  }
-
-  for (row in 1:length(MPF.HSBC.w.i[, 1])) {
-  MPF.HSBC.stock.mean <- 0
-  i <- 0
-
-  for (col in 1:length(MPF.HSBC.w[1, ])) {
-    if ((col >= 13 && col <= 18) && daily[row] <= "2019-07-01") {
-      MPF.HSBC.w.i[row,col] <- 0
-    }
-
-    MPF.HSBC.w.i[row, col] <-
-      na.fill((MPF.HSBC.w.i[row, col]) * MPF.HSBC.RSI.p[row, col], 0)
-
-    if (col != 2 && col != 3 && col != 6 && col != 10 && col != 12 && col != 15) {
-      if (col != 4 && !is.na(MPF.HSBC.returns.mat[row, col]) && MPF.HSBC.returns.mat[row,col] != 0) {
-        MPF.HSBC.stock.mean <-
-          MPF.HSBC.stock.mean + MPF.HSBC.returns.mat[row, col]
-        i <- i + 1
-      }
-
-      if (col == 4) {
-        MPF.HSBC.w.i[row, col] <- 0
-      }
-
-      if (MPF.HSBC.w.i[row, col] < 1e-6) {
-        MPF.HSBC.w.i[row, col] <- 0
-      }
-    } else {
-      if (MPF.HSBC.w.i[row, col] < 0) {
-        MPF.HSBC.w.i[row, col] <- 0
-      }
-    }
-  }
-
-    MPF.HSBC.stock.return[row] <- MPF.HSBC.stock.mean / i
-
-    # Retain two most increasing fund
-    last <- length(MPF.HSBC.w.i[1, ]) - top
-    order <- order(MPF.HSBC.w.i[row, ])
-    for (col in order[1:last]) {
-      MPF.HSBC.w.i[row, col] <- 0
-    }
-
-    #print("segment 1")
-
-    if (row > 8 && MPF.HSBC.stock.return[row] <
-        quantile(na.omit(MPF.HSBC.stock.return), c(.40)) &&
-        MPF.HSBC.stock.return[row - 3] <
-        quantile(na.omit(MPF.HSBC.stock.return), c(.50))) {
-      up <- FALSE
-    }
-
-    if (row > 8 && hedge &&
-        MPF.HSBC.stock.return[row] >
-          quantile(na.omit(MPF.HSBC.stock.return), c(.50))  &&
-        MPF.HSBC.stock.return[row - 3] >
-          quantile(na.omit(MPF.HSBC.stock.return), c(.40))) {
-      hedge <- FALSE
-      up <- TRUE
-    }
-
-    if (row > 8 &&  (MPF.HSBC.stock.return[row] < 0 &&
-                    MPF.HSBC.stock.return[row-1] >
-                    quantile(na.omit(MPF.HSBC.stock.return), c(.8)))) {
-      hedge <- TRUE
-    }
-
-    MPF.HSBC.w.sum <- sum(MPF.HSBC.w.i[row, ])
-
-    MPF.HSBC.p[row,] <- 0
-
-
-    if (row <= 12 || MPF.HSBC.w.sum == MPF.HSBC.w.i[row, 10] ||
-        MPF.HSBC.w.sum < 1e-6 || hedge == TRUE) {
-      if (row >= 110) {
-        MPF.HSBC.p[row, 10] <- 0.7
-        MPF.HSBC.p[row, 6] <- 0.3
-      } else {
-        MPF.HSBC.p[row, 10] <- 1
-      }
-    } else if (length(which(MPF.HSBC.w.i[row, ] != 0)) == 1 ||
-               min(MPF.HSBC.stock.return[(row-3):row]) < -0.075) {
-      if (row >= 110) {
-        MPF.HSBC.p[row, ] <- MPF.HSBC.w.i[row, ] / MPF.HSBC.w.sum / 3
-        MPF.HSBC.p[row, 10] <- 0.2
-        MPF.HSBC.p[row, 6] <- 0.47
-      } else {
-        MPF.HSBC.p[row, ] <- MPF.HSBC.w.i[row, ] / MPF.HSBC.w.sum / 3
-        MPF.HSBC.p[row, 10] <- 0.67
-      }
-
-    } else {
-      MPF.HSBC.p[row, ] <- MPF.HSBC.w.i[row, ] / MPF.HSBC.w.sum
-    }
-
-
-    MPF.portf.weight.all[row,] <-
-      round_percent(MPF.HSBC.p[row, ])
-
-     portf.rebal.i <-
-    Return.portfolio(
-      MPF.HSBC.returns,
-      weight = MPF.portf.weight.all,
-      geometric = TRUE,
-      rebalance_on = "months"
-    )
-
-    MPF.portf.return[row] <- tail(na.omit(portf.rebal.fm), 1)
-    MPF.portf.drawdown <- Drawdowns(MPF.portf.return,
-                                  geometric = TRUE)
-    if (row > 12 && tail(na.omit(MPF.portf.drawdown), 1) < -0.065 &&
-        up == FALSE) {
-      hedge = TRUE
-    }
-  }
-
-
-
-  SR.all[pass] <-
-    Return.annualized(portf.rebal.i, geometric = TRUE) / (StdDev(portf.rebal.i) * sqrt(12))
-}
+# for (pass in 1:30) {
+# 
+#   MPF.HSBC.w.i <- MPF.HSBC.w
+#   MPF.HSBC.w.i[, ] <- MPF.HSBC.w.all[,,pass]
+#   MPF.HSBC.w.i[MPF.HSBC.w.i==0] <- NA
+#   MPF.HSBC.returns.mat <- as.matrix(MPF.HSBC.w.all[,,pass])
+#   MPF.HSBC.returns.mat[MPF.HSBC.returns.mat==0] <- NA
+# 
+#   for (col in 1:length(MPF.HSBC.w.i[1,])) {
+#     MPF.HSBC.w.i[,col] <- ((1+MPF.HSBC.w.i[,col]) * (max_return[col] - min_return[col]))/2 + min_return[col]
+#   }
+# 
+#   for (row in 1:length(MPF.HSBC.w.i[, 1])) {
+#     MPF.HSBC.stock.mean <- 0
+#     i <- 0
+# 
+#     for (col in 1:length(MPF.HSBC.w.i[1, ])) {
+#       if ((col >= 13 && col <= 18) && daily[row] <= "2019-07-01") {
+#         MPF.HSBC.w.i[row,col] <- 0
+#       }
+# 
+#       MPF.HSBC.w.i[row, col] <-
+#         na.fill((MPF.HSBC.w.i[row, col]) * MPF.HSBC.RSI.p[row, col], 0)
+# 
+#       if (col != 2 && col != 3 && col != 6 && col != 10 && col != 12 && col != 15) {
+#         if (col != 4 && !is.na(MPF.HSBC.returns.mat[row, col]) && MPF.HSBC.returns.mat[row,col] != 0) {
+#           MPF.HSBC.stock.mean <-
+#             MPF.HSBC.stock.mean + MPF.HSBC.returns.mat[row, col]
+#           i <- i + 1
+#         }
+# 
+#         if (col == 4) {
+#           MPF.HSBC.w.i[row, col] <- 0
+#         }
+# 
+#         if (MPF.HSBC.w.i[row, col] < 1e-6) {
+#           MPF.HSBC.w.i[row, col] <- 0
+#         }
+#       } else {
+#         if (MPF.HSBC.w.i[row, col] < 0) {
+#           MPF.HSBC.w.i[row, col] <- 0
+#         }
+#       }
+#     }
+# 
+#     MPF.HSBC.stock.return[row] <- MPF.HSBC.stock.mean / i
+# 
+#     # Retain two most increasing fund
+#     last <- length(MPF.HSBC.w.i[1, ]) - top
+#     order <- order(MPF.HSBC.w.i[row, ])
+#     for (col in order[1:last]) {
+#       MPF.HSBC.w.i[row, col] <- 0
+#     }
+# 
+#     #print("segment 1")
+# 
+#     if (row > 8 && MPF.HSBC.stock.return[row] < quantile(na.omit(MPF.HSBC.stock.return), c(.40)) &&
+#         MPF.HSBC.stock.return[row - 3] < quantile(na.omit(MPF.HSBC.stock.return), c(.50))) {
+#       up <- FALSE
+#     }
+# 
+#     if (row > 8 && hedge &&
+#         MPF.HSBC.stock.return[row] >
+#           quantile(na.omit(MPF.HSBC.stock.return), c(.50))  &&
+#         MPF.HSBC.stock.return[row - 3] >
+#           quantile(na.omit(MPF.HSBC.stock.return), c(.40))) {
+#       hedge <- FALSE
+#       up <- TRUE
+#     }
+# 
+#     if (row > 8 &&  (MPF.HSBC.stock.return[row] < 0 &&
+#                     MPF.HSBC.stock.return[row-1] >
+#                     quantile(na.omit(MPF.HSBC.stock.return), c(.8)))) {
+#       hedge <- TRUE
+#     }
+# 
+#     MPF.HSBC.w.sum <- sum(MPF.HSBC.w.i[row, ])
+# 
+#     MPF.HSBC.p[row,] <- 0
+# 
+# 
+#     if (row <= 12 || MPF.HSBC.w.sum == MPF.HSBC.w.i[row, 10] ||
+#         MPF.HSBC.w.sum < 1e-6 || hedge == TRUE) {
+#       if (row >= 110) {
+#         MPF.HSBC.p[row, 10] <- 0.7
+#         MPF.HSBC.p[row, 6] <- 0.3
+#       } else {
+#         MPF.HSBC.p[row, 10] <- 1
+#       }
+#     } else if (length(which(MPF.HSBC.w.i[row, ] != 0)) == 1 ||
+#                min(MPF.HSBC.stock.return[(row-3):row]) < -0.075) {
+#       if (row >= 110) {
+#         MPF.HSBC.p[row, ] <- MPF.HSBC.w.i[row, ] / MPF.HSBC.w.sum / 3
+#         MPF.HSBC.p[row, 10] <- MPF.HSBC.p[row,10]+0.2
+#         MPF.HSBC.p[row, 6] <- MPF.HSBC.p[row,6]+0.47
+#       } else {
+#         MPF.HSBC.p[row, ] <- MPF.HSBC.w.i[row, ] / MPF.HSBC.w.sum / 3
+#         MPF.HSBC.p[row, 10] <- MPF.HSBC.p[row,10]+0.67
+#       }
+# 
+#     } else if (mean(MPF.HSBC.stock.return[(row-3):row]) < -0.005) {
+#       if (row >= 110) {
+#         MPF.HSBC.p[row, ] <- MPF.HSBC.w.i[row, ] / MPF.HSBC.w.sum / 2
+#         MPF.HSBC.p[row, 10] <- MPF.HSBC.p[row,10]+0.32
+#         MPF.HSBC.p[row, 6] <- MPF.HSBC.p[row,6]+0.18
+#       } else {
+#         MPF.HSBC.p[row, ] <- MPF.HSBC.w.i[row, ] / MPF.HSBC.w.sum / 2
+#         MPF.HSBC.p[row, 10] <- MPF.HSBC.p[row,10]+0.5
+#       }
+#     } else {
+#           MPF.HSBC.p[row, ] <- MPF.HSBC.w.i[row, ] / MPF.HSBC.w.sum
+#     }
+# 
+#     if (MPF.HSBC.p[row,11] != 0 && monthly[row] > "2019-07-01") {
+#       MPF.HSBC.p[row,17] <- MPF.HSBC.p[row,11]
+#       MPF.HSBC.p[row,11] <- 0
+#     }
+# 
+# 
+#     MPF.portf.weight.all[row,] <-
+#       round_percent(MPF.HSBC.p[row, ])
+# 
+#      portf.rebal.i <-
+#     Return.portfolio(
+#       MPF.HSBC.returns,
+#       weight = MPF.portf.weight.all,
+#       geometric = TRUE,
+#       rebalance_on = "months"
+#     )
+# 
+#     MPF.portf.return[row] <- tail(na.omit(portf.rebal.fm), 1)
+#     MPF.portf.drawdown <- Drawdowns(MPF.portf.return,
+#                                   geometric = TRUE)
+#     if (row > 12 && tail(na.omit(MPF.portf.drawdown), 1) < -0.065 &&
+#         up == FALSE) {
+#       hedge = TRUE
+#     }
+#   }
+# 
+# 
+# 
+#   SR.all[pass] <-
+#     Return.annualized(portf.rebal.i, geometric = TRUE) / (StdDev(portf.rebal.i) * sqrt(12))
+# }
 
 
 

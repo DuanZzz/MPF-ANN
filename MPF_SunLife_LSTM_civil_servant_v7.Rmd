@@ -7,7 +7,7 @@ output:
 ---
 
 
-# Civil Servant edition
+# Civil Servant Pricing edition
 
 ## Disclamier of warranties
 
@@ -78,23 +78,23 @@ Notice that it is impossible since MPF price are uploaded 1 business day, also r
 
 Using Top 2 Performers in LSTM ANN (Lastest rebalance date: 2019/07/31):  
 
-Annualized Return: ~12.95%   
-Mean Annual Return: ~12.09%   
-Annualized Standard Deviation: ~9.86% (StdDev(monthly return) * sqrt(12))    
-Sharpe Ratio (Mean Annual Return): 12.09%/9.86% = 1.2265   
-Sortino Ratio: 0.7737 (MAR = 0%)  
-Expected Shortfall: 5.37% loss (0% Risk-free rate, 95% C.I.)   
+Annualized Return: ~13.19%   
+Mean Annual Return: ~12.30%   
+Annualized Standard Deviation: ~10.10% (StdDev(monthly return) * sqrt(12))    
+Sharpe Ratio (Mean Annual Return): 12.30%/10.10% = 1.2180   
+Sortino Ratio: 0.7492 (MAR = 0%)  
+Expected Shortfall: 5.67% loss (0% Risk-free rate, 95% C.I.)   
 Deflated Sharpe Ratio (p-value): >99.999%     
 
 Monthly installment:   
 Total contribution: 324000       
-Latest asset value: 1193684         
-Mean annual return: 12.08%    
-Internal Rate of Return (IRR): 12.26%    
-Annualized Standard Deviation: 9.84%    
-Sharpe Ratio: 1.2288      
-Sortino Ratio: 0.7725 (MAR = 0%)   
-Expected Shortfall: 5.37% loss (0% Risk-free rate, 95% C.I.)   
+Latest asset value: 1190206         
+Mean annual return: 12.29%    
+Internal Rate of Return (IRR): 12.24%    
+Annualized Standard Deviation: 10.08%    
+Sharpe Ratio: 1.2203      
+Sortino Ratio: 0.7480 (MAR = 0%)   
+Expected Shortfall: 5.67% loss (0% Risk-free rate, 95% C.I.)   
 
 --------------------------------------------------------------------------------
 
@@ -141,6 +141,7 @@ install.packages("keras")
 2. Now load necessary packages.
 ```{r warning=FALSE, results="hide"}
 library("zoo")
+system("plaidml-setup", input=c("y", "2", "y"))
 library("xts")
 library("fBasics")
 library("quantmod")
@@ -244,7 +245,7 @@ for (row in 1:length(MPF.SunLife.RSI.p[,col])) {
 
 ### Train and predict with Long Short Term Memory (LSTM) model
 ```{r warning=FALSE, results="hide", eval=FALSE}
-use_virtualenv("tensorflow")
+use_python("~/tensorflow_v1/bin/python3")
 use_implementation("tensorflow")
 use_backend("tensorflow")
 
@@ -291,10 +292,11 @@ for (pass in 1:30) {
   
   model <- keras_model_sequential()
   model %>% layer_lstm(units = 64, activation = "tanh", return_sequences=TRUE, 
-                      input_shape = c(1,1), kernel_initializer = initializer_glorot_normal(seed[pass])) %>%
+                      input_shape = c(1,1),
+                      kernel_initializer = initializer_glorot_normal(seed[pass])) %>%
     layer_lstm(units = 16, activation = "tanh", return_sequences=TRUE,
                kernel_initializer = initializer_glorot_normal(seed[pass])) %>%
-    layer_lstm(units = 4, activation = "tanh", return_sequences=TRUE,
+    layer_lstm(units = 4, activation = "tanh",
                kernel_initializer = initializer_glorot_normal(seed[pass])) %>%
     layer_dense(1)
   
@@ -320,8 +322,6 @@ for (pass in 1:30) {
     
     
     for (i in 1:length(X)-1) {
-      
-      
       X_train <- X[1:(i)]
       y_train <- y[1:(i)]
       
@@ -329,6 +329,7 @@ for (pass in 1:30) {
       if (i != length(X)-1) {
         y_test <- y[1:(i+1)]
       }
+      
       
       dim(X_train) <- c(length(X_train),1,1)
       dim(X_test) <- c(length(X_test),1,1)
