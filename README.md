@@ -28,3 +28,7 @@ Preliminary result at [here](https://jchan-gi.github.io/MPF-ANN/index.html)!
 ### 程序庫及程式源始碼的許可證
 * BSD 3-clause (Revised) (See [LICENSE](https://github.com/jchan-gi/MPF-ANN/blob/master/LICENSE))
 * 修訂版BSD許可證 (詳見[LICENSE檔案](https://github.com/jchan-gi/MPF-ANN/blob/master/LICENSE)，只有英文版本)
+
+# Work pending for update in 2020:
+* Walk-forwalk validation for BCT LSTM v8. Afterwards extend v8 to all listed MPF scheme in this repo.
+* Attention mechanism for better prediction.
