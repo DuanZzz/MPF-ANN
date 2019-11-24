@@ -540,27 +540,112 @@ for (pass in 1:30) {
   
   
   tensorflow::tf$random$set_seed(seed[pass])
+  
+  ### Define CustomConv1D
+  
+  CustomLayer <- R6::R6Class("CustomConv1D",
+                                  
+  inherit = layer_conv_1d,
+  
+  public = list(filters,
+                kernel_size,
+                strides=1,
+                 dilation_rate=1,
+                 activation=None,
+                 use_bias=True,
+                 kernel_initializer=None,
+                 bias_initializer=tf.zeros_initializer(),
+                 kernel_regularizer=None,
+                 bias_regularizer=None,
+                 activity_regularizer=None,
+                 kernel_constraint=None,
+                 bias_constraint=None,
+                 trainable=True,
+                 name=None,
+    initialize = function(filters=filters,
+            kernel_size=kernel_size,
+            strides=strides,
+            padding='valid',
+            data_format='channels_last',
+            dilation_rate=dilation_rate,
+            activation=activation,
+            use_bias=use_bias,
+            kernel_initializer=kernel_initializer,
+            bias_initializer=bias_initializer,
+            kernel_regularizer=kernel_regularizer,
+            bias_regularizer=bias_regularizer,
+            activity_regularizer=activity_regularizer,
+            kernel_constraint=kernel_constraint,
+            bias_constraint=bias_constraint,
+            trainable=trainable,
+            name=name,...) {
+      
+            self$filters=filters
+            self$kernel_size=kernel_size
+            self$strides=strides
+            self$padding=padding
+            self$data_format=data_format
+            self$dilation_rate=dilation_rate
+            self$activation=activation
+            self$use_bias=use_bias
+            self$kernel_initializer=kernel_initializer
+            self$bias_initializer=bias_initializer
+            self$kernel_regularizer=kernel_regularizer
+            self$bias_regularizer=bias_regularizer
+            self$activity_regularizer=activity_regularizer
+            self$kernel_constraint=kernel_constraint
+            self$bias_constraint=bias_constraint
+            self$trainable=trainable
+            self$name=name
+      
+    },
+    
+    # build = function(input_shape) {
+    #   self$kernel <- self$add_weight(
+    #     name = 'kernel', 
+    #     shape = list(input_shape[[2]], self$output_dim),
+    #     initializer = initializer_random_normal(),
+    #     trainable = TRUE
+    #   )
+    # },
+    
+    call = function(x, mask = NULL) {
+        padding <- (self$kernel_size[1] - 1) * self$dilation_rate[1]
+        if (self$data_format == 'channels_first'){
+            inputs = tf$pad(inputs, tf$constant(rbind(c(0, 0), c(0, 0), c(padding, 0)), dtype=tf$int32))
+        } else {
+            inputs = tf$pad(inputs, tf$constant(rbind(c(0, 0,), c(padding, 0), c(0, 0))))
+        }
+         list(self$call(inputs), inputs)
+    }
+    
+    # compute_output_shape = function(input_shape) {
+    #   list(input_shape[[1]], self$output_dim)
+    # }
+  )
+)
+  
   #use_session_with_seed(seed[pass], FALSE, FALSE)
   
-  model <- keras_model_sequential()
-  model %>% layer_gru(
-    units = 64,
-    activation = "tanh",
-    #input_shape = c(60, 1),
-    return_sequences = TRUE,
-    kernel_initializer = initializer_glorot_normal(seed[pass])
-  ) %>%
-    layer_gru(
-      units = 16,
-      activation = "tanh",
-      return_sequences = TRUE,
-      kernel_initializer = initializer_glorot_normal(seed[pass])
-    ) %>%
-    layer_gru(units = 4,
-               activation = "tanh",
-               kernel_initializer = 
-                 initializer_glorot_normal(seed[pass])) %>%
-    layer_dense(1)
+  # model <- keras_model_sequential()
+  # model %>% layer_gru(
+  #   units = 64,
+  #   activation = "tanh",
+  #   #input_shape = c(60, 1),
+  #   return_sequences = TRUE,
+  #   kernel_initializer = initializer_glorot_normal(seed[pass])
+  # ) %>%
+  #   layer_gru(
+  #     units = 16,
+  #     activation = "tanh",
+  #     return_sequences = TRUE,
+  #     kernel_initializer = initializer_glorot_normal(seed[pass])
+  #   ) %>%
+  #   layer_gru(units = 4,
+  #              activation = "tanh",
+  #              kernel_initializer = 
+  #                initializer_glorot_normal(seed[pass])) %>%
+  #   layer_dense(1)
   
   ad <- keras::optimizer_adam(lr = learning)
   model %>% compile(optimizer = ad, loss = "mean_squared_error")
