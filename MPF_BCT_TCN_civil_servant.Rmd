@@ -51,7 +51,7 @@ Three major outcomes is targeted in our study:
 ## 警告：在應用MPF-ANN之前，請先於此節了解人工類神經網絡的特性
 This script relies on artifical neural network (ANN) model for MPF fund allocation.   
 ANN is stochastic in nature. In default mode, It produces different results based on the pseudo-random seed (system time).   
-The mean of 30 portfolios with defined seed have been generated in order to generate replicable result.
+The mean of 20 portfolios with defined seed have been generated in order to generate replicable result.
 An trustworthy statistics, deflated sharpe ratio, is used for estimating overfitting of the model. The result of deflated sharpe ration reflectes the percentage of a model have position return due to less overfitting.      
 The model also perform walk-forward validation. 
 A model will be created for exactly next re-balance only based on most updated data for that moment.
@@ -62,7 +62,7 @@ However, please be reminded that backtesting is no way to be accurate in predict
 
 MPF-ANN根據人工類神經網絡的預測回報作強積金基金調動。    
 然而，人工類神經網絡是一隨機過程。在預設的情況下，人工類神經網絡會根據系統時間設定種子，因此每次的執行結果也不盡相同。   
-為提高結果的可複製性，本程式以隨機方式抽取了30個種子以重複生成模型及計算平均值。   
+為提高結果的可複製性，本程式以隨機方式抽取了20個種子以重複生成模型及計算平均值。   
 平均值模型將用以計算學術論文提出的過擬合夏普比率(意譯自deflated sharpe ratio) 來測定人工類神經網絡模型過擬合(overfitting)的程度。過擬合夏普比率數值代表了模型因沒有過度擬合而將有正回報的機率。  
 此外，此模式亦使用了前移式回測(walk-forward validation)。
 每次資產調配都會基於擁有最新資料(當時而言)而建立的人工類神經網結模型。
@@ -169,6 +169,9 @@ install.packages("xts")
 install.packages("fBasics")
 install.packages("quantmod")
 install.packages("PerformanceAnalytics")
+install.packages("feather")
+install.packages("dplyr")
+install.packages("doParallel")
 
 
 ```
@@ -201,11 +204,10 @@ Min_NMMA <- 1e-6
 
 1. Load the price into zoo format
 ```{r linewidth=159, warning=FALSE}
-setwd("~")
 MPF.BCT <-
   as.xts(
     read.zoo(
-      "MPF/BCT/BCT.csv",
+      "F:/OneDrive/MPF/BCT/BCT.csv",
       format = "%Y/%m/%d",
       header = TRUE,
       read = read.csv,
@@ -213,8 +215,8 @@ MPF.BCT <-
     )
   )
 daily <- index(MPF.BCT)
-monthly.old <- index(MPF.BCT.returns)
-MPF.BCT.w.all.backup <- MPF.BCT.w.all
+#monthly.old <- index(MPF.BCT.returns)
+#MPF.BCT.w.all.backup <- MPF.BCT.w.all
 
 ```
 
@@ -424,7 +426,7 @@ MPF.BCT.RSI.sum <-
 ```{r warning=FALSE, results="hide"}
 
 MPF.BCT.w.all <- array(MPF.BCT.returns,
-                        c(length(MPF.BCT.returns[,1]),length(MPF.BCT.returns[1,]),30))
+                        c(length(MPF.BCT.returns[,1]),length(MPF.BCT.returns[1,]),20))
 MPF.BCT.w.all[,,] <- 0
 
 max_return <- c()
@@ -435,8 +437,8 @@ for (col in 1:length(MPF.BCT.returns[1,])) {
   min_return[col] <- min(na.omit(MPF.BCT.returns[,col]))
 }
 
-for (i in 1:30) {
-  MPF.BCT.w.all[,,i] <- data.matrix(as.data.frame(read_feather(paste("/home/jchan/MPF-ANN/temp/mpf_bct_tcn_w_all.feather",i, sep=""))), rownames.force = NA)
+for (i in 1:20) {
+  MPF.BCT.w.all[,,i] <- data.matrix(as.data.frame(read_feather(paste("F:/GitHub repo/MPF-ANN/temp/mpf_bct_tcn_w_all.feather",i, sep=""))))
 }
 ```
 
@@ -479,9 +481,9 @@ colnames(MPF.portf.weight) <-
     "MPF.BCT.MPFC",
     "MPF.BCT.RMBB",
     "MPF.BCT.SFP",
-    "MPF.BCT.SFP",
     "MPF.BCT.SE2040"
   )
+
 
 MPF.BCT.stock.return <-
   as.xts(rowSums(MPF.BCT.RSI.month), order.by = monthly)
@@ -632,7 +634,7 @@ for (row in 1:length(MPF.BCT.w[, 1])) {
   }
 }
 
-for (pass in 1:30)  {
+for (pass in 1:20)  {
   MPF.BCT.w.i <- MPF.BCT.w
   MPF.BCT.w.i[,] <- MPF.BCT.w.all[, ,pass]
   MPF.BCT.w.i[MPF.BCT.w.i == 0] <- NA
