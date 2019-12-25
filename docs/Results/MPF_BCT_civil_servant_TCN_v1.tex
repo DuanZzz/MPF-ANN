@@ -1,0 +1,1227 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={人工神經網絡@銀聯強積金 - MPF-ANN in BCT MPF Scheme},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{xecjk}
+\setCJKmainfont{KaiU.ttf}
+
+\title{人工神經網絡@銀聯強積金 - MPF-ANN in BCT MPF Scheme}
+\author{}
+\date{\vspace{-2.5em}}
+
+\begin{document}
+\maketitle
+
+\hypertarget{portfolio-management-using-artifical-neural-network-ann-in-bct-mpf}{%
+\section{Portfolio management using Artifical Neural Network (ANN) in
+BCT
+MPF}\label{portfolio-management-using-artifical-neural-network-ann-in-bct-mpf}}
+
+\hypertarget{ux9280ux806fux5f37ux7a4dux91d1ux61c9ux7528ux4ebaux5de5ux985eux795eux7d93ux7db2ux7d61ux9032ux884cux8cc7ux7522ux8abfux914d}{%
+\section{銀聯強積金應用人工類神經網絡進行資產調配}\label{ux9280ux806fux5f37ux7a4dux91d1ux61c9ux7528ux4ebaux5de5ux985eux795eux7d93ux7db2ux7d61ux9032ux884cux8cc7ux7522ux8abfux914d}}
+
+\hypertarget{disclamier-of-warranties}{%
+\subsection{Disclamier of warranties}\label{disclamier-of-warranties}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  The author (jchan-gi) expressly stated that nothing my repositories
+  and webpages constitutes any advices or recommendation on investing or
+  allocating assets on any stock or financial products.\\
+\item
+  No content in my study have been prepared with respect to specific
+  personal need and investment objects of individuals. All materials
+  reveal to the public are applicable to the author (jchan-gi) only.
+\item
+  All investors shall obtain kind advices from professional financial
+  consultants before making any decisions. Professional financial
+  consultants should recommend products or decisions that suit your
+  needs and objectives.\\
+\item
+  The author is not licensed nor professional in the field hence this
+  studies are not professional advice and may not be suitable for anyone
+  except myself.
+\end{enumerate}
+
+\hypertarget{last-update-20191226.}{%
+\subsubsection{Last update: 2019/12/26.}\label{last-update-20191226.}}
+
+\hypertarget{changelog}{%
+\subsubsection{Changelog}\label{changelog}}
+
+2019-12-26 v1 1. Using Temporal Convolution Network (TCN) instead of
+LSTM in future development. 2. Training and Inference has mitigated to
+Python file. 3. Rolling window have been adopted in training.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  以卷積時序網絡取代長短期記憶模型。
+\item
+  訓練及推論已改在Python上進行。
+\item
+  訓練數據改以滾動窗口方式建立。
+\end{enumerate}
+
+\hypertarget{warning-please-understand-nature-of-ann-in-this-section-before-applying-mpf-ann}{%
+\subsection{WARNING: Please understand nature of ANN in this section
+before applying
+MPF-ANN:}\label{warning-please-understand-nature-of-ann-in-this-section-before-applying-mpf-ann}}
+
+\hypertarget{ux8b66ux544aux5728ux61c9ux7528mpf-annux4e4bux524dux8acbux5148ux65bcux6b64ux7bc0ux4e86ux89e3ux4ebaux5de5ux985eux795eux7d93ux7db2ux7d61ux7684ux7279ux6027}{%
+\subsection{警告：在應用MPF-ANN之前，請先於此節了解人工類神經網絡的特性}\label{ux8b66ux544aux5728ux61c9ux7528mpf-annux4e4bux524dux8acbux5148ux65bcux6b64ux7bc0ux4e86ux89e3ux4ebaux5de5ux985eux795eux7d93ux7db2ux7d61ux7684ux7279ux6027}}
+
+This script relies on artifical neural network (ANN) model for MPF fund
+allocation.\\
+ANN is stochastic in nature. In default mode, It produces different
+results based on the pseudo-random seed (system time).\\
+The mean of 20 portfolios with defined seed have been generated in order
+to generate replicable result. An trustworthy statistics, deflated
+sharpe ratio, is used for estimating overfitting of the model. The
+result of deflated sharpe ration reflectes the percentage of a model
+have position return due to less overfitting.\\
+The model also perform walk-forward validation. A model will be created
+for exactly next re-balance only based on most updated data for that
+moment.
+
+There is no other validation or assessment on the data.\\
+Two validation shall give reasonable assessment on the return
+estimation.\\
+However, please be reminded that backtesting is no way to be accurate in
+predicting future performance.
+
+MPF-ANN根據人工類神經網絡的預測回報作強積金基金調動。\\
+然而，人工類神經網絡是一隨機過程。在預設的情況下，人工類神經網絡會根據系統時間設定種子，因此每次的執行結果也不盡相同。\\
+為提高結果的可複製性，本程式以隨機方式抽取了20個種子以重複生成模型及計算平均值。\\
+平均值模型將用以計算學術論文提出的過擬合夏普比率(意譯自deflated sharpe
+ratio)
+來測定人工類神經網絡模型過擬合(overfitting)的程度。過擬合夏普比率數值代表了模型因沒有過度擬合而將有正回報的機率。\\
+此外，此模式亦使用了前移式回測(walk-forward validation)。
+每次資產調配都會基於擁有當時而言的最新資料而建立的人工類神經網結模型。
+
+此模型只建基於上述兩項的檢測。\\
+上述的檢測應可視為MPF-ANN所計算的回測結果可靠程度的參考指標。\\
+然而，請切記過往表現不代表將來表現。
+
+\hypertarget{background-introduction}{%
+\subsubsection{Background Introduction}\label{background-introduction}}
+
+\hypertarget{ux80ccux666fux7c21ux4ecb}{%
+\subsubsection{背景簡介}\label{ux80ccux666fux7c21ux4ecb}}
+
+Mandatory Provident Fund (MPF) is one of the legal pensions in
+Hongkong.\\
+All Employers and some employees are required to pay at least 5\% of
+monthly salary to MPF services provider.\\
+MPF providers are required to provide approved funds for employees to
+invest, while the team could earn management fees.
+
+However, the average annualized return of MPF is 3.1\% only in from
+2000-2016 (Mandatory Provident Fund Schemes Authority, 2016).\\
+Most Hongkong employees feels they are forced to give their salary to
+MPF fund manager.\\
+Indeed, the reasons of low return may due to inactive management by
+employees.\\
+In this example, we will explore artifical neural network (ANN) to rise
+the annualized return in MPF-ANN.
+
+在香港，強積性公積金(強積金, Mandatory Provident Fund,
+MPF)是其中一種法定退休金。\\
+僱主及部份僱員須扣除5\%薪金供強積金營運商。
+強積金營運商將每月收取管理費，並提供認可基金供僱員作投資儲蓄。
+但是，強積金的平均回報僅3.1\%，因而被批評回報有三份之一被基金經理蠶食。
+誠言，每位僱員如以主動方式管理強積金，有助提升回報而減少收費的影響。
+這文記錄了作者以人工類神經網絡方式提升強積金回報的探索(即MPF-ANN)。
+
+\hypertarget{bct-mpf-portfolio-generation-using-temporal-convolution-network-tcn-relative-strength-index}{%
+\subsubsection{BCT MPF Portfolio Generation using Temporal Convolution
+Network (TCN) \& Relative Strength
+Index}\label{bct-mpf-portfolio-generation-using-temporal-convolution-network-tcn-relative-strength-index}}
+
+\hypertarget{ux9280ux806fux7a4dux91d1ux4e4bux9078ux57faux91d1ux5206ux914dux7684ux5efaux7acb}{%
+\subsubsection{銀聯積金之選基金分配的建立}\label{ux9280ux806fux7a4dux91d1ux4e4bux9078ux57faux91d1ux5206ux914dux7684ux5efaux7acb}}
+
+作者嘗試以卷積時序網絡(TCN,
+一種新型人工類神經網絡結構)及相對強弱指數分配強積金成份基金。
+TCN的預測只考慮了基金的趨勢。 相對強弱指數則可懲罰超買的強積金成份基金。
+
+在考慮最近三至六個月回報後，程式將自動決定以TCN推測佈置戰術性資產部署(tactical
+asset allocation, TAA) 、
+TCN結果配合債券及現金的策略性資產部署(Strategic asset
+allocation)或進入避險模式。
+
+\hypertarget{when-to-manage-my-mpf}{%
+\subsubsection{When to manage my MPF?}\label{when-to-manage-my-mpf}}
+
+\hypertarget{ux4f55ux6642ux7ba1ux7406ux53caux8abfux914dux5f37ux7a4dux91d1}{%
+\subsubsection{何時管理及調配強積金?}\label{ux4f55ux6642ux7ba1ux7406ux53caux8abfux914dux5f37ux7a4dux91d1}}
+
+作者以每月最後一日取得以前的基金價格計算每月回報及相對強弱指數。
+然後於同日重新配置強積金成分基金。
+然而，強積金大部分均有T+2的時延，因此實際操作將有時延誤差。
+
+\hypertarget{mpf-ann-walk-forwark-validation-results}{%
+\subsubsection{MPF-ANN Walk-forwark validation
+results}\label{mpf-ann-walk-forwark-validation-results}}
+
+\hypertarget{mpf-ann-ux524dux79fbux5f0fux56deux6e2cux7d50ux679c}{%
+\subsubsection{MPF-ANN
+前移式回測結果}\label{mpf-ann-ux524dux79fbux5f0fux56deux6e2cux7d50ux679c}}
+
+第一期強積金供款 First MPF Installment: 年率化回報 Annualized Return:
+\textasciitilde10.29\%\\
+算術年均回報 Mean Annual Return: \textasciitilde9.93\%\\
+年率化標準誤差 Annualized Standard Deviation: \textasciitilde8.04\%
+(StdDev(monthly return) * sqrt(12))\\
+夏普比率 Sharpe Ratio (Mean Annual Return): 10.29\%/8.04\% = 1.2797\\
+索丁諾比率 Sortino Ratio: 0.7462 (MAR = 0\%)\\
+預期損失 Expected Shortfall: 4.14\% loss (0\% Risk-free rate, 95\%
+C.I.)\\
+過擬合夏普比率 Deflated Sharpe Ratio (p-value): \textgreater99.9999\%
+(rounded to 1)
+
+真實強積金(月供) Monthly MPF installment (或有誤差 maybe slightly
+differs):\\
+總供款 Total contribution: 337500\\
+最新結餘 Latest asset value: 871187.4\\
+算術年均回報 Mean annual return: 8.70\%\\
+內部回報率 Internal Rate of Return (IRR): 8.87\%\\
+年率化標準誤差 Annualized Standard Deviation: 8.01\%\\
+夏普比率 Sharpe Ratio: 1.0855\\
+索丁諾比率 Sortino Ratio: 0.6735 (MAR = 0\%)\\
+預期損失 Expected Shortfall: 4.21\% loss (0\% Risk-free rate, 95\% C.I.)
+
+\hypertarget{package-preparation}{%
+\subsubsection{Package Preparation}\label{package-preparation}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Install necessary packages
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{r =}\StringTok{ }\KeywordTok{getOption}\NormalTok{(}\StringTok{"repos"}\NormalTok{)}
+\NormalTok{r[}\StringTok{"CRAN"}\NormalTok{] =}\StringTok{ "https://mran.revolutionanalytics.com/snapshot/2019-11-01"}
+\KeywordTok{options}\NormalTok{(}\DataTypeTok{repos =}\NormalTok{ r)}
+\KeywordTok{install.packages}\NormalTok{(}\StringTok{"zoo"}\NormalTok{)}
+\KeywordTok{install.packages}\NormalTok{(}\StringTok{"xts"}\NormalTok{)}
+\KeywordTok{install.packages}\NormalTok{(}\StringTok{"fBasics"}\NormalTok{)}
+\KeywordTok{install.packages}\NormalTok{(}\StringTok{"quantmod"}\NormalTok{)}
+\KeywordTok{install.packages}\NormalTok{(}\StringTok{"PerformanceAnalytics"}\NormalTok{)}
+\KeywordTok{install.packages}\NormalTok{(}\StringTok{"feather"}\NormalTok{)}
+\KeywordTok{install.packages}\NormalTok{(}\StringTok{"dplyr"}\NormalTok{)}
+\KeywordTok{install.packages}\NormalTok{(}\StringTok{"doParallel"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\tightlist
+\item
+  Now load necessary packages.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(}\StringTok{"dplyr"}\NormalTok{)}
+\KeywordTok{library}\NormalTok{(}\StringTok{"zoo"}\NormalTok{)}
+\KeywordTok{library}\NormalTok{(}\StringTok{"xts"}\NormalTok{)}
+\KeywordTok{library}\NormalTok{(}\StringTok{"fBasics"}\NormalTok{)}
+\KeywordTok{library}\NormalTok{(}\StringTok{"quantmod"}\NormalTok{)}
+\KeywordTok{library}\NormalTok{(}\StringTok{"PerformanceAnalytics"}\NormalTok{)}
+\KeywordTok{library}\NormalTok{(}\StringTok{"feather"}\NormalTok{)}
+
+\KeywordTok{library}\NormalTok{(}\StringTok{"doParallel"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{load-prices-and-calculate-return}{%
+\subsubsection{Load Prices and Calculate
+Return}\label{load-prices-and-calculate-return}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{-1}
+\tightlist
+\item
+  Parameters
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{top <-}\StringTok{ }\DecValTok{2}
+\NormalTok{RSI_Overbuy <-}\StringTok{ }\FloatTok{0.85}
+\NormalTok{RSI_Period <-}\StringTok{ }\DecValTok{18} 
+\NormalTok{Min_NMMA <-}\StringTok{ }\FloatTok{1e-6}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Load the price into zoo format
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{MPF.BCT <-}
+\StringTok{  }\KeywordTok{as.xts}\NormalTok{(}
+    \KeywordTok{read.zoo}\NormalTok{(}
+      \StringTok{"F:/OneDrive/MPF/BCT/BCT.csv"}\NormalTok{,}
+      \DataTypeTok{format =} \StringTok{"%Y/%m/%d"}\NormalTok{,}
+      \DataTypeTok{header =} \OtherTok{TRUE}\NormalTok{,}
+      \DataTypeTok{read =}\NormalTok{ read.csv,}
+      \DataTypeTok{na.strings =} \StringTok{"0"}
+\NormalTok{    )}
+\NormalTok{  )}
+\NormalTok{daily <-}\StringTok{ }\KeywordTok{index}\NormalTok{(MPF.BCT)}
+\CommentTok{#monthly.old <- index(MPF.BCT.returns)}
+\CommentTok{#MPF.BCT.w.all.backup <- MPF.BCT.w.all}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\item
+  Calculate Relative Strength Index (RSI)
+\item
+  Calculate Returns
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{MPF.BCT.AE <-}\StringTok{ }\KeywordTok{monthlyReturn}\NormalTok{(}\KeywordTok{as.xts}\NormalTok{(MPF.BCT}\OperatorTok{$}\NormalTok{AE), }\DataTypeTok{type =} \StringTok{"log"}\NormalTok{)}
+\NormalTok{MPF.BCT.CA <-}\StringTok{ }\KeywordTok{monthlyReturn}\NormalTok{(}\KeywordTok{as.xts}\NormalTok{(MPF.BCT}\OperatorTok{$}\NormalTok{CA), }\DataTypeTok{type =} \StringTok{"log"}\NormalTok{)}
+\NormalTok{MPF.BCT.CEHK <-}\StringTok{ }\KeywordTok{monthlyReturn}\NormalTok{(}\KeywordTok{as.xts}\NormalTok{(MPF.BCT}\OperatorTok{$}\NormalTok{CEHK), }\DataTypeTok{type =} \StringTok{"log"}\NormalTok{)}
+\NormalTok{MPF.BCT.CT <-}\StringTok{ }\KeywordTok{monthlyReturn}\NormalTok{(}\KeywordTok{as.xts}\NormalTok{(MPF.BCT}\OperatorTok{$}\NormalTok{CT), }\DataTypeTok{type =} \StringTok{"log"}\NormalTok{)}
+\NormalTok{MPF.BCT.EU <-}\StringTok{ }\KeywordTok{monthlyReturn}\NormalTok{(}\KeywordTok{as.xts}\NormalTok{(MPF.BCT}\OperatorTok{$}\NormalTok{EU), }\DataTypeTok{type =} \StringTok{"log"}\NormalTok{)}
+\NormalTok{MPF.BCT.E3 <-}\StringTok{ }\KeywordTok{monthlyReturn}\NormalTok{(}\KeywordTok{as.xts}\NormalTok{(MPF.BCT}\OperatorTok{$}\NormalTok{E30), }\DataTypeTok{type =} \StringTok{"log"}\NormalTok{)}
+\NormalTok{MPF.BCT.E5 <-}\StringTok{ }\KeywordTok{monthlyReturn}\NormalTok{(}\KeywordTok{as.xts}\NormalTok{(MPF.BCT}\OperatorTok{$}\NormalTok{E50), }\DataTypeTok{type =} \StringTok{"log"}\NormalTok{)}
+\NormalTok{MPF.BCT.E7 <-}\StringTok{ }\KeywordTok{monthlyReturn}\NormalTok{(}\KeywordTok{as.xts}\NormalTok{(MPF.BCT}\OperatorTok{$}\NormalTok{E70), }\DataTypeTok{type =} \StringTok{"log"}\NormalTok{)}
+\NormalTok{MPF.BCT.E9 <-}\StringTok{ }\KeywordTok{monthlyReturn}\NormalTok{(}\KeywordTok{as.xts}\NormalTok{(MPF.BCT}\OperatorTok{$}\NormalTok{E90), }\DataTypeTok{type =} \StringTok{"log"}\NormalTok{)}
+\NormalTok{MPF.BCT.FM <-}\StringTok{ }\KeywordTok{monthlyReturn}\NormalTok{(}\KeywordTok{as.xts}\NormalTok{(MPF.BCT}\OperatorTok{$}\NormalTok{FM), }\DataTypeTok{type =} \StringTok{"log"}\NormalTok{)}
+
+\NormalTok{MPF.BCT.GB <-}\StringTok{ }\KeywordTok{monthlyReturn}\NormalTok{(}\KeywordTok{as.xts}\NormalTok{(MPF.BCT}\OperatorTok{$}\NormalTok{GB), }\DataTypeTok{type =} \StringTok{"log"}\NormalTok{)}
+\NormalTok{MPF.BCT.GE <-}\StringTok{ }\KeywordTok{monthlyReturn}\NormalTok{(}\KeywordTok{as.xts}\NormalTok{(MPF.BCT}\OperatorTok{$}\NormalTok{GE), }\DataTypeTok{type =} \StringTok{"log"}\NormalTok{)}
+\NormalTok{MPF.BCT.GT <-}\StringTok{ }\KeywordTok{monthlyReturn}\NormalTok{(}\KeywordTok{as.xts}\NormalTok{(MPF.BCT}\OperatorTok{$}\NormalTok{GT), }\DataTypeTok{type =} \StringTok{"log"}\NormalTok{)}
+\NormalTok{MPF.BCT.HKB <-}\StringTok{ }\KeywordTok{monthlyReturn}\NormalTok{(}\KeywordTok{as.xts}\NormalTok{(MPF.BCT}\OperatorTok{$}\NormalTok{HKB), }\DataTypeTok{type =} \StringTok{"log"}\NormalTok{)}
+\NormalTok{MPF.BCT.HSIT <-}\StringTok{ }\KeywordTok{monthlyReturn}\NormalTok{(}\KeywordTok{as.xts}\NormalTok{(MPF.BCT}\OperatorTok{$}\NormalTok{HSIT), }\DataTypeTok{type =} \StringTok{"log"}\NormalTok{)}
+\NormalTok{MPF.BCT.MPFC <-}\StringTok{ }\KeywordTok{monthlyReturn}\NormalTok{(}\KeywordTok{as.xts}\NormalTok{(MPF.BCT}\OperatorTok{$}\NormalTok{MPFC), }\DataTypeTok{type =} \StringTok{"log"}\NormalTok{)}
+\NormalTok{MPF.BCT.RMBB <-}\StringTok{ }\KeywordTok{monthlyReturn}\NormalTok{(}\KeywordTok{as.xts}\NormalTok{(MPF.BCT}\OperatorTok{$}\NormalTok{RMBB), }\DataTypeTok{type =} \StringTok{"log"}\NormalTok{)}
+\NormalTok{MPF.BCT.SFP <-}\StringTok{ }\KeywordTok{monthlyReturn}\NormalTok{(}\KeywordTok{as.xts}\NormalTok{(MPF.BCT}\OperatorTok{$}\NormalTok{SFP), }\DataTypeTok{type =} \StringTok{"log"}\NormalTok{)}
+\NormalTok{MPF.BCT.SE40 <-}\StringTok{ }\KeywordTok{monthlyReturn}\NormalTok{(}\KeywordTok{as.xts}\NormalTok{(MPF.BCT}\OperatorTok{$}\NormalTok{SE2040), }\DataTypeTok{type =} \StringTok{"log"}\NormalTok{)}
+
+
+\NormalTok{MPF.BCT.returns <-}
+\StringTok{  }\KeywordTok{merge}\NormalTok{(}
+\NormalTok{    MPF.BCT.AE,}
+\NormalTok{    MPF.BCT.CA,}
+\NormalTok{    MPF.BCT.CEHK,}
+\NormalTok{    MPF.BCT.CT,}
+\NormalTok{    MPF.BCT.EU,}
+\NormalTok{    MPF.BCT.E3,}
+\NormalTok{    MPF.BCT.E5,}
+\NormalTok{    MPF.BCT.E7,}
+\NormalTok{    MPF.BCT.E9,}
+\NormalTok{    MPF.BCT.FM,}
+\NormalTok{    MPF.BCT.GB,}
+\NormalTok{    MPF.BCT.GE,}
+\NormalTok{    MPF.BCT.GT,}
+\NormalTok{    MPF.BCT.HKB,}
+\NormalTok{    MPF.BCT.HSIT,}
+\NormalTok{    MPF.BCT.MPFC,}
+\NormalTok{    MPF.BCT.RMBB,}
+\NormalTok{    MPF.BCT.SFP,}
+\NormalTok{    MPF.BCT.SE40}
+\NormalTok{  )}
+
+\NormalTok{MPF.BCT.original.cost <-}
+\StringTok{  }\KeywordTok{c}\NormalTok{(}
+    \FloatTok{0.0182}\NormalTok{,}
+    \FloatTok{0.0085}\NormalTok{,}
+    \FloatTok{0.0166}\NormalTok{,}
+    \FloatTok{0.0115}\NormalTok{,}
+    \FloatTok{0.0165}\NormalTok{,}
+    \FloatTok{0.0163}\NormalTok{,}
+    \FloatTok{0.0163}\NormalTok{,}
+    \FloatTok{0.0162}\NormalTok{,}
+    \FloatTok{0.0152}\NormalTok{,}
+    \FloatTok{0.0136}\NormalTok{,}
+    \FloatTok{0.0150}\NormalTok{,}
+    \FloatTok{0.0167}\NormalTok{,}
+    \FloatTok{0.0100}\NormalTok{,}
+    \FloatTok{0.0112}\NormalTok{,}
+    \FloatTok{0.0084}\NormalTok{,}
+    \FloatTok{0.0094}\NormalTok{,}
+    \FloatTok{0.0126}\NormalTok{,}
+    \FloatTok{0.0082}\NormalTok{,}
+    \FloatTok{0.0150}
+\NormalTok{  ) }\OperatorTok{/}\StringTok{ }\DecValTok{12}
+\NormalTok{MPF.BCT.cs.cost <-}
+\StringTok{  }\KeywordTok{c}\NormalTok{(}
+    \FloatTok{0.0069}\NormalTok{,}
+    \FloatTok{0.0062}\NormalTok{,}
+    \FloatTok{0.0069}\NormalTok{,}
+    \FloatTok{0.0060}\NormalTok{,}
+    \FloatTok{0.0069}\NormalTok{,}
+    \FloatTok{0.0062}\NormalTok{,}
+    \FloatTok{0.0062}\NormalTok{,}
+    \FloatTok{0.0062}\NormalTok{,}
+    \FloatTok{0.0062}\NormalTok{,}
+    \FloatTok{0.0062}\NormalTok{,}
+    \FloatTok{0.0055}\NormalTok{,}
+    \FloatTok{0.0069}\NormalTok{,}
+    \FloatTok{0.0060}\NormalTok{,}
+    \FloatTok{0.0055}\NormalTok{,}
+    \FloatTok{0.0050}\NormalTok{,}
+    \FloatTok{0.0040}\NormalTok{,}
+    \FloatTok{0.0055}\NormalTok{,}
+    \FloatTok{0.0062}\NormalTok{,}
+    \FloatTok{0.0062}
+\NormalTok{  ) }\OperatorTok{/}\StringTok{ }\DecValTok{12}
+
+\ControlFlowTok{for}\NormalTok{ (col }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\KeywordTok{length}\NormalTok{(MPF.BCT.returns[}\DecValTok{1}\NormalTok{, ])) \{}
+\NormalTok{  MPF.BCT.returns[, col] <-}
+\StringTok{    }\NormalTok{MPF.BCT.returns[, col] }\OperatorTok{-}\StringTok{ }\NormalTok{MPF.BCT.cs.cost[col] }\OperatorTok{+}\StringTok{ }\NormalTok{MPF.BCT.original.cost[col]}
+\NormalTok{\}}
+
+
+\NormalTok{monthly <-}\StringTok{ }\KeywordTok{index}\NormalTok{(MPF.BCT.returns)}
+\CommentTok{#monthly <- length(monthly)}
+\NormalTok{MPF.BCT.colnames <-}\StringTok{ }
+\StringTok{  }\KeywordTok{c}\NormalTok{(}
+    \StringTok{"MPF.BCT.AE"}\NormalTok{,}
+    \StringTok{"MPF.BCT.CA"}\NormalTok{,}
+    \StringTok{"MPF.BCT.CEHK"}\NormalTok{,}
+    \StringTok{"MPF.BCT.CT"}\NormalTok{,}
+    \StringTok{"MPF.BCT.EU"}\NormalTok{,}
+    \StringTok{"MPF.BCT.E3"}\NormalTok{,}
+    \StringTok{"MPF.BCT.E5"}\NormalTok{,}
+    \StringTok{"MPF.BCT.E7"}\NormalTok{,}
+    \StringTok{"MPF.BCT.E9"}\NormalTok{,}
+    \StringTok{"MPF.BCT.FM"}\NormalTok{,}
+    \StringTok{"MPF.BCT.GB"}\NormalTok{,}
+    \StringTok{"MPF.BCT.GE"}\NormalTok{,}
+    \StringTok{"MPF.BCT.GT"}\NormalTok{,}
+    \StringTok{"MPF.BCT.HKB"}\NormalTok{,}
+    \StringTok{"MPF.BCT.HSIT"}\NormalTok{,}
+    \StringTok{"MPF.BCT.MPFC"}\NormalTok{,}
+    \StringTok{"MPF.BCT.RMBB"}\NormalTok{,}
+    \StringTok{"MPF.BCT.SFP"}\NormalTok{,}
+    \StringTok{"MPF.BCT.SE2040"}
+\NormalTok{  )}
+
+\KeywordTok{colnames}\NormalTok{(MPF.BCT.returns) <-}\StringTok{ }\NormalTok{MPF.BCT.colnames}
+  
+\KeywordTok{rm}\NormalTok{(}
+\NormalTok{  MPF.BCT.AE,}
+\NormalTok{  MPF.BCT.CA,}
+\NormalTok{  MPF.BCT.CEHK,}
+\NormalTok{  MPF.BCT.CT,}
+\NormalTok{  MPF.BCT.EU,}
+\NormalTok{  MPF.BCT.E3,}
+\NormalTok{  MPF.BCT.E5,}
+\NormalTok{  MPF.BCT.E7,}
+\NormalTok{  MPF.BCT.E9,}
+\NormalTok{  MPF.BCT.FM,}
+\NormalTok{  MPF.BCT.GB,}
+\NormalTok{  MPF.BCT.GE,}
+\NormalTok{  MPF.BCT.GT,}
+\NormalTok{  MPF.BCT.HKB,}
+\NormalTok{  MPF.BCT.HSIT,}
+\NormalTok{  MPF.BCT.MPFC,}
+\NormalTok{  MPF.BCT.RMBB,}
+\NormalTok{  MPF.BCT.SFP,}
+\NormalTok{  MPF.BCT.SE40}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{calculate-average-rsi-of-the-month-and-then-adjustment-factor}{%
+\subsubsection{Calculate average RSI of the month, and then adjustment
+factor}\label{calculate-average-rsi-of-the-month-and-then-adjustment-factor}}
+
+Adjustment factor = 1 - ECDF of RSI of that month New weight = old
+weight * (0.05 + adjustment factor) Finally normalize it to sum(row) = 1
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{MPF.BCT.RSI.month <-}
+\StringTok{  }\KeywordTok{as.xts}\NormalTok{(}\KeywordTok{do.call}\NormalTok{(rbind, }\KeywordTok{lapply}\NormalTok{(}\KeywordTok{split}\NormalTok{(}\KeywordTok{as.xts}\NormalTok{(MPF.BCT.RSI), }\StringTok{"months"}\NormalTok{), }\ControlFlowTok{function}\NormalTok{(x)}
+    \KeywordTok{colAvgs}\NormalTok{(x))), }\DataTypeTok{order.by =}\NormalTok{ monthly)}
+\NormalTok{MPF.BCT.RSI.p <-}\StringTok{ }\NormalTok{MPF.BCT.returns}
+\NormalTok{MPF.BCT.RSI.p[, ] <-}\StringTok{ }\DecValTok{0}
+\ControlFlowTok{for}\NormalTok{ (col }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\KeywordTok{length}\NormalTok{(MPF.BCT.RSI.month[}\DecValTok{1}\NormalTok{, ])) \{}
+  \ControlFlowTok{if}\NormalTok{ (col }\OperatorTok{!=}\StringTok{ }\DecValTok{16}\NormalTok{) \{}
+    \ControlFlowTok{for}\NormalTok{ (row }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\KeywordTok{length}\NormalTok{(MPF.BCT.RSI.month[, col])) \{}
+\NormalTok{      percentile <-}\StringTok{ }\KeywordTok{ecdf}\NormalTok{(}\KeywordTok{as.numeric}\NormalTok{(MPF.BCT.RSI.month[}\DecValTok{1}\OperatorTok{:}\NormalTok{row, col]))}
+      \ControlFlowTok{if}\NormalTok{ (}\KeywordTok{percentile}\NormalTok{(MPF.BCT.RSI.month[row, col]) }\OperatorTok{>=}\StringTok{ }\NormalTok{(RSI_Overbuy }\OperatorTok{-}\StringTok{ }\NormalTok{((}\KeywordTok{length}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\NormalTok{row) }\OperatorTok{^}
+\StringTok{                                                                      }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\DecValTok{3}\NormalTok{)) }\OperatorTok{/}\StringTok{ }\NormalTok{(}\KeywordTok{length}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\NormalTok{row) }\OperatorTok{^}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\DecValTok{2}\NormalTok{))))) \{}
+\NormalTok{        MPF.BCT.RSI.p[row, col] <-}\StringTok{ }\FloatTok{0.4}
+\NormalTok{      \} }\ControlFlowTok{else}\NormalTok{ \{}
+\NormalTok{        MPF.BCT.RSI.p[row, col] <-}
+\StringTok{          }\FloatTok{1.4} \OperatorTok{-}\StringTok{ }\NormalTok{(}\KeywordTok{percentile}\NormalTok{(MPF.BCT.RSI.month[row, col]) }\OperatorTok{^}\StringTok{ }\DecValTok{2}\NormalTok{)}
+\NormalTok{      \}}
+\NormalTok{    \}}
+    
+\NormalTok{  \} }\ControlFlowTok{else}\NormalTok{ \{}
+\NormalTok{    MPF.BCT.RSI.p[, col] <-}\StringTok{ }\DecValTok{1}
+\NormalTok{  \}}
+\NormalTok{\}}
+\NormalTok{MPF.BCT.RSI.sum <-}
+\StringTok{  }\KeywordTok{as.xts}\NormalTok{(}\KeywordTok{rowSums}\NormalTok{(MPF.BCT.RSI.p), }\DataTypeTok{order.by =}\NormalTok{ monthly)}
+\ControlFlowTok{for}\NormalTok{ (row }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\KeywordTok{length}\NormalTok{(MPF.BCT.RSI.p[, col])) \{}
+\NormalTok{  MPF.BCT.RSI.p[row, ] =}\StringTok{ }\KeywordTok{apply}\NormalTok{(MPF.BCT.RSI.p[row, ], }\DecValTok{2}\NormalTok{, }\ControlFlowTok{function}\NormalTok{(x)}
+\NormalTok{    (x }\OperatorTok{/}\StringTok{ }\NormalTok{MPF.BCT.RSI.sum[row, }\DecValTok{1}\NormalTok{]) }\OperatorTok{^}\StringTok{ }\NormalTok{(}\FloatTok{0.25}\NormalTok{))}
+\NormalTok{\}}
+\NormalTok{MPF.BCT.RSI.sum <-}
+\StringTok{  }\KeywordTok{as.xts}\NormalTok{(}\KeywordTok{rowSums}\NormalTok{(MPF.BCT.RSI.p), }\DataTypeTok{order.by =}\NormalTok{ monthly)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{load-python-data}{%
+\subsubsection{load python data}\label{load-python-data}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{MPF.BCT.w.all <-}\StringTok{ }\KeywordTok{array}\NormalTok{(MPF.BCT.returns,}
+                        \KeywordTok{c}\NormalTok{(}\KeywordTok{length}\NormalTok{(MPF.BCT.returns[,}\DecValTok{1}\NormalTok{]),}\KeywordTok{length}\NormalTok{(MPF.BCT.returns[}\DecValTok{1}\NormalTok{,]),}\DecValTok{20}\NormalTok{))}
+\NormalTok{MPF.BCT.w.all[,,] <-}\StringTok{ }\DecValTok{0}
+
+\NormalTok{max_return <-}\StringTok{ }\KeywordTok{c}\NormalTok{()}
+\NormalTok{min_return <-}\StringTok{ }\KeywordTok{c}\NormalTok{()}
+
+\ControlFlowTok{for}\NormalTok{ (col }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\KeywordTok{length}\NormalTok{(MPF.BCT.returns[}\DecValTok{1}\NormalTok{,])) \{}
+\NormalTok{  max_return[col] <-}\StringTok{ }\KeywordTok{max}\NormalTok{(}\KeywordTok{na.omit}\NormalTok{(MPF.BCT.returns[,col]))}
+\NormalTok{  min_return[col] <-}\StringTok{ }\KeywordTok{min}\NormalTok{(}\KeywordTok{na.omit}\NormalTok{(MPF.BCT.returns[,col]))}
+\NormalTok{\}}
+
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\DecValTok{20}\NormalTok{) \{}
+\NormalTok{  MPF.BCT.w.all[,,i] <-}\StringTok{ }\KeywordTok{data.matrix}\NormalTok{(}\KeywordTok{as.data.frame}\NormalTok{(}\KeywordTok{read_feather}\NormalTok{(}\KeywordTok{paste}\NormalTok{(}\StringTok{"F:/GitHub repo/MPF-ANN/temp/mpf_bct_tcn_w_all.feather"}\NormalTok{,i, }\DataTypeTok{sep=}\StringTok{""}\NormalTok{))))}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{calculate-the-weight-according-to-predicted-return}{%
+\subsubsection{Calculate the weight according to predicted
+return}\label{calculate-the-weight-according-to-predicted-return}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{MPF.BCT.w <-}\StringTok{ }\NormalTok{MPF.BCT.returns}
+\NormalTok{MPF.BCT.w[, ] <-}\StringTok{ }\DecValTok{0}
+
+\NormalTok{MPF.BCT.w <-}\StringTok{ }\KeywordTok{rowAvgs}\NormalTok{(MPF.BCT.w.all, }\DataTypeTok{dims =} \DecValTok{2}\NormalTok{)}
+\NormalTok{MPF.BCT.w[MPF.BCT.w }\OperatorTok{==}\StringTok{ }\DecValTok{0}\NormalTok{] <-}\StringTok{ }\OtherTok{NA}
+\ControlFlowTok{for}\NormalTok{ (col }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\KeywordTok{length}\NormalTok{(MPF.BCT.w[}\DecValTok{1}\NormalTok{, ])) \{}
+\NormalTok{  MPF.BCT.w[, col] <-}
+\StringTok{    }\NormalTok{((MPF.BCT.w[, col] }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{/}\StringTok{ }\DecValTok{2} \OperatorTok{*}\StringTok{ }\NormalTok{(max_return[col] }\OperatorTok{-}\StringTok{ }\NormalTok{min_return[col]) }\OperatorTok{+}\StringTok{ }\NormalTok{min_return[col])}
+\NormalTok{\}}
+
+
+
+\NormalTok{MPF.portf.weight <-}\StringTok{ }\NormalTok{MPF.BCT.returns}
+\NormalTok{MPF.portf.weight[,] <-}\StringTok{ }\OtherTok{NA}
+\NormalTok{MPF.portf.weight.all <-}\StringTok{ }\NormalTok{MPF.BCT.returns}
+\NormalTok{MPF.portf.weight.all[, ] <-}\StringTok{ }\OtherTok{NA}
+\KeywordTok{colnames}\NormalTok{(MPF.portf.weight) <-}
+\StringTok{  }\KeywordTok{c}\NormalTok{(}
+    \StringTok{"MPF.BCT.AE"}\NormalTok{,}
+    \StringTok{"MPF.BCT.CA"}\NormalTok{,}
+    \StringTok{"MPF.BCT.CEHK"}\NormalTok{,}
+    \StringTok{"MPF.BCT.CT"}\NormalTok{,}
+    \StringTok{"MPF.BCT.EU"}\NormalTok{,}
+    \StringTok{"MPF.BCT.E3"}\NormalTok{,}
+    \StringTok{"MPF.BCT.E5"}\NormalTok{,}
+    \StringTok{"MPF.BCT.E7"}\NormalTok{,}
+    \StringTok{"MPF.BCT.E9"}\NormalTok{,}
+    \StringTok{"MPF.BCT.FM"}\NormalTok{,}
+    \StringTok{"MPF.BCT.GB"}\NormalTok{,}
+    \StringTok{"MPF.BCT.GE"}\NormalTok{,}
+    \StringTok{"MPF.BCT.GT"}\NormalTok{,}
+    \StringTok{"MPF.BCT.HKB"}\NormalTok{,}
+    \StringTok{"MPF.BCT.HSIT"}\NormalTok{,}
+    \StringTok{"MPF.BCT.MPFC"}\NormalTok{,}
+    \StringTok{"MPF.BCT.RMBB"}\NormalTok{,}
+    \StringTok{"MPF.BCT.SFP"}\NormalTok{,}
+    \StringTok{"MPF.BCT.SE2040"}
+\NormalTok{  )}
+
+
+\NormalTok{MPF.BCT.stock.return <-}
+\StringTok{  }\KeywordTok{as.xts}\NormalTok{(}\KeywordTok{rowSums}\NormalTok{(MPF.BCT.RSI.month), }\DataTypeTok{order.by =}\NormalTok{ monthly)}
+\NormalTok{MPF.BCT.stock.return[] <-}\StringTok{ }\OtherTok{NA}
+\NormalTok{MPF.portf.return <-}
+\StringTok{  }\KeywordTok{as.xts}\NormalTok{(}\KeywordTok{rowSums}\NormalTok{(MPF.BCT.RSI.month), }\DataTypeTok{order.by =}\NormalTok{ monthly)}
+\NormalTok{MPF.portf.return[] <-}\StringTok{ }\OtherTok{NA}
+
+
+\NormalTok{MPF.BCT.returns.mat <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(MPF.BCT.returns)}
+
+\NormalTok{MPF.BCT.p <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(MPF.BCT.returns)}
+\NormalTok{MPF.BCT.p[,] <-}\StringTok{ }\DecValTok{0}
+\NormalTok{SR.all <-}\StringTok{ }\KeywordTok{c}\NormalTok{()}
+
+
+\NormalTok{hedge <-}\StringTok{ }\OtherTok{FALSE}
+\NormalTok{hedge_once <-}\StringTok{ }\OtherTok{FALSE}
+\NormalTok{up <-}\StringTok{ }\OtherTok{TRUE}
+\NormalTok{round_percent <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x) \{}
+\NormalTok{  x <-}\StringTok{ }\NormalTok{x }\OperatorTok{*}\StringTok{ }\DecValTok{100}
+\NormalTok{  result <-}\StringTok{ }\KeywordTok{floor}\NormalTok{(x)    }\CommentTok{# Find integer bits}
+\NormalTok{  remain <-}\StringTok{ }\NormalTok{x }\OperatorTok{-}\StringTok{ }\NormalTok{result}
+\NormalTok{  rsum <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(result)   }\CommentTok{# Find out how much we are missing}
+\NormalTok{  i <-}\StringTok{ }\DecValTok{1}
+  \ControlFlowTok{if}\NormalTok{ (rsum }\OperatorTok{<}\StringTok{ }\DecValTok{100}\NormalTok{) \{}
+\NormalTok{    o <-}\StringTok{ }\KeywordTok{order}\NormalTok{(remain, }\DataTypeTok{decreasing =} \OtherTok{TRUE}\NormalTok{)}
+    \ControlFlowTok{while}\NormalTok{ (rsum }\OperatorTok{<}\StringTok{ }\DecValTok{100}\NormalTok{) \{}
+      \ControlFlowTok{if}\NormalTok{ (i }\OperatorTok{>}\StringTok{ }\KeywordTok{length}\NormalTok{(remain))}
+\NormalTok{        i <-}\StringTok{ }\DecValTok{1}
+\NormalTok{      idx <-}\StringTok{ }\NormalTok{o[i]}
+      \ControlFlowTok{if}\NormalTok{ (result[idx] }\OperatorTok{==}\StringTok{ }\DecValTok{0}\NormalTok{) \{}
+\NormalTok{        i <-}\StringTok{ }\NormalTok{i }\OperatorTok{+}\StringTok{ }\DecValTok{1}
+        \ControlFlowTok{next}
+\NormalTok{      \}}
+\NormalTok{      result[idx] <-}\StringTok{ }\NormalTok{result[idx] }\OperatorTok{+}\StringTok{ }\DecValTok{1}
+\NormalTok{      rsum <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(result)}
+\NormalTok{      i <-}\StringTok{ }\NormalTok{i }\OperatorTok{+}\StringTok{ }\DecValTok{1}
+\NormalTok{    \}}
+\NormalTok{  \}}
+\NormalTok{  result <-}\StringTok{ }\NormalTok{result }\OperatorTok{/}\StringTok{ }\DecValTok{100}
+  \KeywordTok{return}\NormalTok{(result)}
+\NormalTok{\}}
+
+
+\ControlFlowTok{for}\NormalTok{ (row }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\KeywordTok{length}\NormalTok{(MPF.BCT.w[, }\DecValTok{1}\NormalTok{])) \{}
+\NormalTok{  MPF.BCT.stock.mean <-}\StringTok{ }\DecValTok{0}
+\NormalTok{  i <-}\StringTok{ }\DecValTok{0}
+  
+  \ControlFlowTok{for}\NormalTok{ (col }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\KeywordTok{length}\NormalTok{(MPF.BCT.w[}\DecValTok{1}\NormalTok{,])) \{}
+\NormalTok{    MPF.BCT.w[row, col] <-}
+\StringTok{      }\KeywordTok{na.fill}\NormalTok{((MPF.BCT.w[row, col]) }\OperatorTok{*}\StringTok{ }\NormalTok{MPF.BCT.RSI.p[row, col], }\DecValTok{0}\NormalTok{)}
+    
+    \ControlFlowTok{if}\NormalTok{ (col }\OperatorTok{!=}\StringTok{ }\DecValTok{2} \OperatorTok{&&}
+\StringTok{        }\NormalTok{col }\OperatorTok{!=}\StringTok{ }\DecValTok{6} \OperatorTok{&&}
+\StringTok{        }\NormalTok{col }\OperatorTok{!=}\StringTok{ }\DecValTok{7} \OperatorTok{&&}
+\StringTok{        }\NormalTok{col }\OperatorTok{!=}\StringTok{ }\DecValTok{11} \OperatorTok{&&}\StringTok{ }\NormalTok{col }\OperatorTok{!=}\StringTok{ }\DecValTok{14} \OperatorTok{&&}\StringTok{ }\NormalTok{col }\OperatorTok{!=}\StringTok{ }\DecValTok{16} \OperatorTok{&&}\StringTok{ }\NormalTok{col }\OperatorTok{!=}\StringTok{ }\DecValTok{17} \OperatorTok{&&}\StringTok{ }\NormalTok{col }\OperatorTok{!=}\StringTok{ }\DecValTok{18}\NormalTok{) \{}
+      \ControlFlowTok{if}\NormalTok{ (}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(MPF.BCT.returns.mat[row, col]) }\OperatorTok{&&}
+\StringTok{          }\NormalTok{MPF.BCT.returns.mat[row, col] }\OperatorTok{!=}\StringTok{ }\DecValTok{0}\NormalTok{) \{}
+\NormalTok{        MPF.BCT.stock.mean <-}
+\StringTok{          }\NormalTok{MPF.BCT.stock.mean }\OperatorTok{+}\StringTok{ }\NormalTok{MPF.BCT.returns.mat[row, col]}
+\NormalTok{        i <-}\StringTok{ }\NormalTok{i }\OperatorTok{+}\StringTok{ }\DecValTok{1}
+\NormalTok{      \}}
+      
+      \ControlFlowTok{if}\NormalTok{ (col }\OperatorTok{==}\StringTok{ }\DecValTok{3} \OperatorTok{||}\StringTok{ }\NormalTok{col }\OperatorTok{==}\StringTok{ }\DecValTok{4} \OperatorTok{||}\StringTok{ }\NormalTok{MPF.BCT.w[row, col] }\OperatorTok{<}\StringTok{ }\FloatTok{1e-6}\NormalTok{) \{}
+\NormalTok{        MPF.BCT.w[row, col] <-}\StringTok{ }\DecValTok{0}
+\NormalTok{      \}}
+\NormalTok{    \} }\ControlFlowTok{else}\NormalTok{ \{}
+      \ControlFlowTok{if}\NormalTok{ (MPF.BCT.w[row, col] }\OperatorTok{<}\StringTok{ }\DecValTok{0}\NormalTok{) \{}
+\NormalTok{        MPF.BCT.w[row, col] <-}\StringTok{ }\DecValTok{0}
+\NormalTok{      \}}
+\NormalTok{    \}}
+\NormalTok{  \}}
+  
+\NormalTok{  MPF.BCT.stock.return[row] <-}\StringTok{ }\NormalTok{MPF.BCT.stock.mean }\OperatorTok{/}\StringTok{ }\NormalTok{i}
+  
+  \CommentTok{# Retain two most increasing fund}
+\NormalTok{  last <-}\StringTok{ }\KeywordTok{length}\NormalTok{(MPF.BCT.w[}\DecValTok{1}\NormalTok{,]) }\OperatorTok{-}\StringTok{ }\NormalTok{top}
+\NormalTok{  order <-}\StringTok{ }\KeywordTok{order}\NormalTok{(MPF.BCT.w[row,])}
+  \ControlFlowTok{for}\NormalTok{ (col }\ControlFlowTok{in}\NormalTok{ order[}\DecValTok{1}\OperatorTok{:}\NormalTok{last]) \{}
+\NormalTok{    MPF.BCT.w[row, col] <-}\StringTok{ }\DecValTok{0}
+\NormalTok{  \}}
+  
+  
+  
+  \ControlFlowTok{if}\NormalTok{ (row }\OperatorTok{>}\StringTok{ }\DecValTok{12} \OperatorTok{&&}
+\StringTok{      }\NormalTok{MPF.BCT.stock.return[row] }\OperatorTok{>}
+\StringTok{      }\KeywordTok{quantile}\NormalTok{(}\KeywordTok{na.omit}\NormalTok{(MPF.BCT.stock.return), }\KeywordTok{c}\NormalTok{(.}\DecValTok{35}\NormalTok{))  }\OperatorTok{&&}
+\StringTok{      }\NormalTok{MPF.BCT.stock.return[(row }\OperatorTok{-}\StringTok{ }\DecValTok{3}\NormalTok{)] }\OperatorTok{>}
+\StringTok{      }\KeywordTok{quantile}\NormalTok{(}\KeywordTok{na.omit}\NormalTok{(MPF.BCT.stock.return), }\KeywordTok{c}\NormalTok{(.}\DecValTok{45}\NormalTok{))) \{}
+\NormalTok{    up <-}\StringTok{ }\OtherTok{FALSE}
+\NormalTok{  \}}
+  
+  \ControlFlowTok{if}\NormalTok{ (row }\OperatorTok{>}\StringTok{ }\DecValTok{12} \OperatorTok{&&}\StringTok{ }\NormalTok{hedge }\OperatorTok{&&}
+\StringTok{      }\NormalTok{MPF.BCT.stock.return[(row)]}\OperatorTok{>}
+\StringTok{      }\KeywordTok{quantile}\NormalTok{(}\KeywordTok{na.omit}\NormalTok{(MPF.BCT.stock.return), }\KeywordTok{c}\NormalTok{(.}\DecValTok{55}\NormalTok{))  }\OperatorTok{&&}
+\StringTok{      }\NormalTok{MPF.BCT.stock.return[(row }\OperatorTok{-}\StringTok{ }\DecValTok{3}\NormalTok{)] }\OperatorTok{>}
+\StringTok{      }\KeywordTok{quantile}\NormalTok{(}\KeywordTok{na.omit}\NormalTok{(MPF.BCT.stock.return), }\KeywordTok{c}\NormalTok{(.}\DecValTok{35}\NormalTok{))) \{}
+\NormalTok{    hedge <-}\StringTok{ }\OtherTok{FALSE}
+\NormalTok{    up <-}\StringTok{ }\OtherTok{TRUE}
+\NormalTok{  \}}
+  
+  \ControlFlowTok{if}\NormalTok{ (row }\OperatorTok{>}\StringTok{ }\DecValTok{12} \OperatorTok{&&}\StringTok{  }\NormalTok{(MPF.BCT.stock.return[row] }\OperatorTok{<}\StringTok{ }\DecValTok{0} \OperatorTok{&&}
+\StringTok{                   }\NormalTok{MPF.BCT.stock.return[row }\OperatorTok{-}\StringTok{ }\DecValTok{1}\NormalTok{] }\OperatorTok{>}
+\StringTok{                   }\KeywordTok{quantile}\NormalTok{(}\KeywordTok{na.omit}\NormalTok{(MPF.BCT.stock.return), }\KeywordTok{c}\NormalTok{(.}\DecValTok{75}\NormalTok{)))) \{}
+\NormalTok{      hedge <-}\StringTok{ }\OtherTok{TRUE}
+\NormalTok{  \}}
+  
+  
+  
+\NormalTok{  MPF.BCT.w.sum <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(MPF.BCT.w[row,])}
+  
+  
+  \ControlFlowTok{if}\NormalTok{ (row }\OperatorTok{<=}\StringTok{ }\DecValTok{15} \OperatorTok{||}\StringTok{ }\NormalTok{MPF.BCT.w.sum }\OperatorTok{==}\StringTok{ }\NormalTok{MPF.BCT.w[row, }\DecValTok{16}\NormalTok{] }\OperatorTok{||}
+\StringTok{      }\NormalTok{MPF.BCT.w.sum }\OperatorTok{<}\StringTok{ }\FloatTok{1e-6} \OperatorTok{||}\StringTok{ }\NormalTok{hedge }\OperatorTok{==}\StringTok{ }\OtherTok{TRUE} \OperatorTok{||}\StringTok{ }\NormalTok{hedge_once }\OperatorTok{==}\StringTok{ }\OtherTok{TRUE}\NormalTok{) \{}
+    \ControlFlowTok{if}\NormalTok{ (row }\OperatorTok{>=}\StringTok{ }\DecValTok{24}\NormalTok{) \{}
+\NormalTok{      MPF.BCT.p[row, }\DecValTok{11}\NormalTok{] <-}\StringTok{ }\FloatTok{0.35}
+\NormalTok{      MPF.BCT.p[row, }\DecValTok{16}\NormalTok{] <-}\StringTok{ }\FloatTok{0.65}
+\NormalTok{    \} }\ControlFlowTok{else}\NormalTok{ \{}
+\NormalTok{      MPF.BCT.p[row, }\DecValTok{16}\NormalTok{] <-}\StringTok{ }\DecValTok{1}
+\NormalTok{    \}}
+\NormalTok{  \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (}\KeywordTok{length}\NormalTok{(}\KeywordTok{which}\NormalTok{(MPF.BCT.w[row,] }\OperatorTok{!=}\StringTok{ }\DecValTok{0}\NormalTok{)) }\OperatorTok{==}\StringTok{ }\DecValTok{1} \OperatorTok{||}
+\StringTok{             }\KeywordTok{min}\NormalTok{(MPF.BCT.stock.return[(row }\OperatorTok{-}\StringTok{ }\DecValTok{3}\NormalTok{)}\OperatorTok{:}\NormalTok{row]) }\OperatorTok{<}\StringTok{ }\FloatTok{-0.065}\NormalTok{)\{}
+    \ControlFlowTok{if}\NormalTok{ (row }\OperatorTok{>=}\StringTok{ }\DecValTok{24}\NormalTok{) \{}
+\NormalTok{      MPF.BCT.p[row,] <-}\StringTok{ }\NormalTok{MPF.BCT.w[row,] }\OperatorTok{/}\StringTok{ }\NormalTok{MPF.BCT.w.sum }\OperatorTok{/}\StringTok{ }\DecValTok{10} \OperatorTok{*}\StringTok{ }\DecValTok{4}
+\NormalTok{      MPF.BCT.p[row, }\DecValTok{11}\NormalTok{] <-}\StringTok{ }\NormalTok{MPF.BCT.p[row, }\DecValTok{11}\NormalTok{] }\OperatorTok{+}\StringTok{ }\FloatTok{0.45}
+\NormalTok{      MPF.BCT.p[row, }\DecValTok{16}\NormalTok{] <-}\StringTok{ }\NormalTok{MPF.BCT.p[row, }\DecValTok{16}\NormalTok{] }\OperatorTok{+}\StringTok{ }\FloatTok{0.15}
+\NormalTok{    \} }\ControlFlowTok{else}\NormalTok{ \{}
+\NormalTok{      MPF.BCT.p[row,] <-}\StringTok{ }\NormalTok{MPF.BCT.w[row,] }\OperatorTok{/}\StringTok{ }\NormalTok{MPF.BCT.w.sum }\OperatorTok{/}\StringTok{ }\DecValTok{10} \OperatorTok{*}\StringTok{ }\DecValTok{4}
+\NormalTok{      MPF.BCT.p[row, }\DecValTok{16}\NormalTok{] <-}\StringTok{ }\NormalTok{MPF.BCT.p[row, }\DecValTok{16}\NormalTok{] }\OperatorTok{+}\StringTok{ }\FloatTok{0.6}
+\NormalTok{    \}}
+\NormalTok{  \} }\ControlFlowTok{else}\NormalTok{ \{}
+\NormalTok{    MPF.BCT.p[row,] <-}\StringTok{ }\NormalTok{MPF.BCT.w[row,] }\OperatorTok{/}\StringTok{ }\NormalTok{MPF.BCT.w.sum}
+\NormalTok{  \}}
+  
+\NormalTok{  MPF.portf.weight[row,] <-}\StringTok{ }\KeywordTok{round_percent}\NormalTok{(MPF.BCT.p[row,])}
+\NormalTok{  portf.rebal.fm <-}
+\StringTok{    }\KeywordTok{Return.portfolio}\NormalTok{(}
+\NormalTok{      MPF.BCT.returns,}
+      \DataTypeTok{weight =}\NormalTok{ MPF.portf.weight,}
+      \DataTypeTok{geometric =} \OtherTok{TRUE}\NormalTok{,}
+      \DataTypeTok{rebalance_on =} \StringTok{"months"}
+\NormalTok{    )}
+  
+\NormalTok{  MPF.portf.return[row] <-}
+\StringTok{    }\KeywordTok{tail}\NormalTok{(}\KeywordTok{na.omit}\NormalTok{(portf.rebal.fm), }\DecValTok{1}\NormalTok{)}
+\NormalTok{  MPF.portf.drawdown <-}\StringTok{ }\KeywordTok{Drawdowns}\NormalTok{(MPF.portf.return,}
+                                  \DataTypeTok{geometric =} \OtherTok{TRUE}\NormalTok{)}
+  \ControlFlowTok{if}\NormalTok{ (}\KeywordTok{tail}\NormalTok{(}\KeywordTok{na.omit}\NormalTok{(MPF.portf.drawdown), }\DecValTok{1}\NormalTok{) }\OperatorTok{<}\StringTok{ }\FloatTok{-0.065} \OperatorTok{&&}
+\StringTok{      }\NormalTok{up }\OperatorTok{==}\StringTok{ }\OtherTok{FALSE}\NormalTok{) \{}
+\NormalTok{    hedge =}\StringTok{ }\OtherTok{TRUE}
+\NormalTok{  \}}
+\NormalTok{\}}
+
+\NormalTok{cl <-}\StringTok{ }\KeywordTok{makeCluster}\NormalTok{(}\DecValTok{24}\NormalTok{)}
+\KeywordTok{registerDoParallel}\NormalTok{(cl)}
+\NormalTok{SR.all <-}\StringTok{ }\KeywordTok{foreach}\NormalTok{(}\DataTypeTok{pass=}\DecValTok{1}\OperatorTok{:}\DecValTok{20}\NormalTok{, }\DataTypeTok{.combine=}\StringTok{"c"}\NormalTok{, }\DataTypeTok{.packages=}\KeywordTok{c}\NormalTok{(}\StringTok{"zoo"}\NormalTok{, }\StringTok{"xts"}\NormalTok{, }\StringTok{"PerformanceAnalytics"}\NormalTok{)) }\OperatorTok{%dopar%}\StringTok{ }\NormalTok{\{}
+\CommentTok{# for (pass in 1:20) \{}
+  
+\NormalTok{  MPF.BCT.w.i <-}\StringTok{ }\NormalTok{MPF.BCT.w}
+\NormalTok{  MPF.BCT.w.i[,] <-}\StringTok{ }\NormalTok{MPF.BCT.w.all[, ,pass]}
+\NormalTok{  MPF.BCT.w.i[MPF.BCT.w.i }\OperatorTok{==}\StringTok{ }\DecValTok{0}\NormalTok{] <-}\StringTok{ }\OtherTok{NA}
+  \ControlFlowTok{for}\NormalTok{ (col }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\KeywordTok{length}\NormalTok{(MPF.BCT.w.i[}\DecValTok{1}\NormalTok{, ])) \{}
+\NormalTok{    MPF.BCT.w.i[, col] <-}
+\StringTok{      }\NormalTok{((MPF.BCT.w.i[, col] }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{/}\StringTok{ }\DecValTok{2} \OperatorTok{*}\StringTok{ }\NormalTok{(max_return[col] }\OperatorTok{-}\StringTok{ }\NormalTok{min_return[col]) }\OperatorTok{+}\StringTok{ }\NormalTok{min_return[col])}
+\NormalTok{  \}}
+
+\NormalTok{  MPF.BCT.returns.mat <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(MPF.BCT.returns)}
+
+  \ControlFlowTok{for}\NormalTok{ (row }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\KeywordTok{length}\NormalTok{(MPF.BCT.w.i[, }\DecValTok{1}\NormalTok{])) \{}
+\NormalTok{    MPF.BCT.stock.mean <-}\StringTok{ }\DecValTok{0}
+\NormalTok{    i <-}\StringTok{ }\DecValTok{0}
+
+    \ControlFlowTok{for}\NormalTok{ (col }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\KeywordTok{length}\NormalTok{(MPF.BCT.w.i[}\DecValTok{1}\NormalTok{,])) \{}
+\NormalTok{      MPF.BCT.w.i[row, col] <-}
+\StringTok{        }\KeywordTok{na.fill}\NormalTok{((MPF.BCT.w.i[row, col]) }\OperatorTok{*}\StringTok{ }\NormalTok{MPF.BCT.RSI.p[row, col], }\DecValTok{0}\NormalTok{)}
+
+      \ControlFlowTok{if}\NormalTok{ (col }\OperatorTok{!=}\StringTok{ }\DecValTok{2} \OperatorTok{&&}
+\StringTok{          }\NormalTok{col }\OperatorTok{!=}\StringTok{ }\DecValTok{6} \OperatorTok{&&}
+\StringTok{          }\NormalTok{col }\OperatorTok{!=}\StringTok{ }\DecValTok{7} \OperatorTok{&&}
+\StringTok{          }\NormalTok{col }\OperatorTok{!=}\StringTok{ }\DecValTok{11} \OperatorTok{&&}\StringTok{ }\NormalTok{col }\OperatorTok{!=}\StringTok{ }\DecValTok{14} \OperatorTok{&&}\StringTok{ }\NormalTok{col }\OperatorTok{!=}\StringTok{ }\DecValTok{16} \OperatorTok{&&}\StringTok{ }\NormalTok{col }\OperatorTok{!=}\StringTok{ }\DecValTok{17} \OperatorTok{&&}\StringTok{ }\NormalTok{col }\OperatorTok{!=}\StringTok{ }\DecValTok{18}\NormalTok{) \{}
+        \ControlFlowTok{if}\NormalTok{ (}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(MPF.BCT.returns.mat[row, col]) }\OperatorTok{&&}
+\StringTok{            }\NormalTok{MPF.BCT.returns.mat[row, col] }\OperatorTok{!=}\StringTok{ }\DecValTok{0}\NormalTok{) \{}
+\NormalTok{          MPF.BCT.stock.mean <-}
+\StringTok{            }\NormalTok{MPF.BCT.stock.mean }\OperatorTok{+}\StringTok{ }\NormalTok{MPF.BCT.returns.mat[row, col]}
+\NormalTok{          i <-}\StringTok{ }\NormalTok{i }\OperatorTok{+}\StringTok{ }\DecValTok{1}
+\NormalTok{        \}}
+
+        \ControlFlowTok{if}\NormalTok{ (col }\OperatorTok{==}\StringTok{ }\DecValTok{3} \OperatorTok{||}\StringTok{ }\NormalTok{col }\OperatorTok{==}\StringTok{ }\DecValTok{4} \OperatorTok{||}\StringTok{ }\NormalTok{MPF.BCT.w.i[row, col] }\OperatorTok{<}\StringTok{ }\FloatTok{1e-6}\NormalTok{) \{}
+\NormalTok{          MPF.BCT.w.i[row, col] <-}\StringTok{ }\DecValTok{0}
+\NormalTok{        \}}
+\NormalTok{      \} }\ControlFlowTok{else}\NormalTok{ \{}
+        \ControlFlowTok{if}\NormalTok{ (MPF.BCT.w.i[row, col] }\OperatorTok{<}\StringTok{ }\DecValTok{0}\NormalTok{) \{}
+\NormalTok{          MPF.BCT.w.i[row, col] <-}\StringTok{ }\DecValTok{0}
+\NormalTok{        \}}
+\NormalTok{      \}}
+\NormalTok{    \}}
+
+\NormalTok{    MPF.BCT.stock.return[row] <-}\StringTok{ }\NormalTok{MPF.BCT.stock.mean }\OperatorTok{/}\StringTok{ }\NormalTok{i}
+
+    \CommentTok{# Retain two most increasing fund}
+\NormalTok{    last <-}\StringTok{ }\KeywordTok{length}\NormalTok{(MPF.BCT.w.i[}\DecValTok{1}\NormalTok{,]) }\OperatorTok{-}\StringTok{ }\NormalTok{top}
+\NormalTok{    order <-}\StringTok{ }\KeywordTok{order}\NormalTok{(MPF.BCT.w.i[row,])}
+    \ControlFlowTok{for}\NormalTok{ (col }\ControlFlowTok{in}\NormalTok{ order[}\DecValTok{1}\OperatorTok{:}\NormalTok{last]) \{}
+\NormalTok{      MPF.BCT.w.i[row, col] <-}\StringTok{ }\DecValTok{0}
+\NormalTok{    \}}
+
+    \CommentTok{#print("segment 1")}
+
+    \ControlFlowTok{if}\NormalTok{ (row }\OperatorTok{>}\StringTok{ }\DecValTok{12} \OperatorTok{&&}
+\StringTok{        }\NormalTok{MPF.BCT.stock.return[row] }\OperatorTok{>}
+\StringTok{        }\KeywordTok{quantile}\NormalTok{(}\KeywordTok{na.omit}\NormalTok{(MPF.BCT.stock.return), }\KeywordTok{c}\NormalTok{(.}\DecValTok{35}\NormalTok{))  }\OperatorTok{&&}
+\StringTok{        }\NormalTok{MPF.BCT.stock.return[(row }\OperatorTok{-}\StringTok{ }\DecValTok{3}\NormalTok{)] }\OperatorTok{>}
+\StringTok{        }\KeywordTok{quantile}\NormalTok{(}\KeywordTok{na.omit}\NormalTok{(MPF.BCT.stock.return), }\KeywordTok{c}\NormalTok{(.}\DecValTok{45}\NormalTok{))) \{}
+\NormalTok{      up <-}\StringTok{ }\OtherTok{FALSE}
+\NormalTok{    \}}
+    
+    \ControlFlowTok{if}\NormalTok{ (row }\OperatorTok{>}\StringTok{ }\DecValTok{12} \OperatorTok{&&}\StringTok{ }\NormalTok{hedge }\OperatorTok{&&}
+\StringTok{        }\NormalTok{MPF.BCT.stock.return[(row)]}\OperatorTok{>}
+\StringTok{        }\KeywordTok{quantile}\NormalTok{(}\KeywordTok{na.omit}\NormalTok{(MPF.BCT.stock.return), }\KeywordTok{c}\NormalTok{(.}\DecValTok{55}\NormalTok{))  }\OperatorTok{&&}
+\StringTok{        }\NormalTok{MPF.BCT.stock.return[(row }\OperatorTok{-}\StringTok{ }\DecValTok{3}\NormalTok{)] }\OperatorTok{>}
+\StringTok{        }\KeywordTok{quantile}\NormalTok{(}\KeywordTok{na.omit}\NormalTok{(MPF.BCT.stock.return), }\KeywordTok{c}\NormalTok{(.}\DecValTok{35}\NormalTok{))) \{}
+\NormalTok{      hedge <-}\StringTok{ }\OtherTok{FALSE}
+\NormalTok{      up <-}\StringTok{ }\OtherTok{TRUE}
+\NormalTok{    \}}
+    
+    \ControlFlowTok{if}\NormalTok{ (row }\OperatorTok{>}\StringTok{ }\DecValTok{12} \OperatorTok{&&}\StringTok{  }\NormalTok{(MPF.BCT.stock.return[row] }\OperatorTok{<}\StringTok{ }\DecValTok{0} \OperatorTok{&&}
+\StringTok{                     }\NormalTok{MPF.BCT.stock.return[row }\OperatorTok{-}\StringTok{ }\DecValTok{1}\NormalTok{] }\OperatorTok{>}
+\StringTok{                     }\KeywordTok{quantile}\NormalTok{(}\KeywordTok{na.omit}\NormalTok{(MPF.BCT.stock.return), }\KeywordTok{c}\NormalTok{(.}\DecValTok{75}\NormalTok{)))) \{}
+\NormalTok{        hedge <-}\StringTok{ }\OtherTok{TRUE}
+\NormalTok{    \}}
+
+\NormalTok{    MPF.BCT.w.sum <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(MPF.BCT.w.i[row,])}
+\NormalTok{    MPF.BCT.p[row, ] <-}\StringTok{ }\DecValTok{0}
+
+    \ControlFlowTok{if}\NormalTok{ (row }\OperatorTok{<=}\StringTok{ }\DecValTok{15} \OperatorTok{||}\StringTok{ }\NormalTok{MPF.BCT.w.sum }\OperatorTok{==}\StringTok{ }\NormalTok{MPF.BCT.w.i[row, }\DecValTok{16}\NormalTok{] }\OperatorTok{||}
+\StringTok{        }\NormalTok{MPF.BCT.w.sum }\OperatorTok{<}\StringTok{ }\FloatTok{1e-6} \OperatorTok{||}\StringTok{ }\NormalTok{hedge }\OperatorTok{==}\StringTok{ }\OtherTok{TRUE} \OperatorTok{||}\StringTok{ }\NormalTok{hedge_once }\OperatorTok{==}\StringTok{ }\OtherTok{TRUE}\NormalTok{) \{}
+      \ControlFlowTok{if}\NormalTok{ (row }\OperatorTok{>=}\StringTok{ }\DecValTok{24}\NormalTok{) \{}
+\NormalTok{        MPF.BCT.p[row, }\DecValTok{11}\NormalTok{] <-}\StringTok{ }\FloatTok{0.35}
+\NormalTok{        MPF.BCT.p[row, }\DecValTok{16}\NormalTok{] <-}\StringTok{ }\FloatTok{0.65}
+\NormalTok{      \} }\ControlFlowTok{else}\NormalTok{ \{}
+\NormalTok{        MPF.BCT.p[row, }\DecValTok{16}\NormalTok{] <-}\StringTok{ }\DecValTok{1}
+\NormalTok{      \}}
+\NormalTok{    \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (}\KeywordTok{length}\NormalTok{(}\KeywordTok{which}\NormalTok{(MPF.BCT.w.i[row,] }\OperatorTok{!=}\StringTok{ }\DecValTok{0}\NormalTok{)) }\OperatorTok{==}\StringTok{ }\DecValTok{1} \OperatorTok{||}
+\StringTok{               }\KeywordTok{min}\NormalTok{(MPF.BCT.stock.return[(row }\OperatorTok{-}\StringTok{ }\DecValTok{3}\NormalTok{)}\OperatorTok{:}\NormalTok{row]) }\OperatorTok{<}\StringTok{ }\FloatTok{-0.065}\NormalTok{)\{}
+      \ControlFlowTok{if}\NormalTok{ (row }\OperatorTok{>=}\StringTok{ }\DecValTok{24}\NormalTok{) \{}
+\NormalTok{        MPF.BCT.p[row,] <-}\StringTok{ }\NormalTok{MPF.BCT.w.i[row,] }\OperatorTok{/}\StringTok{ }\NormalTok{MPF.BCT.w.sum }\OperatorTok{/}\StringTok{ }\DecValTok{10} \OperatorTok{*}\StringTok{ }\DecValTok{4}
+\NormalTok{        MPF.BCT.p[row, }\DecValTok{11}\NormalTok{] <-}\StringTok{ }\NormalTok{MPF.BCT.p[row, }\DecValTok{11}\NormalTok{] }\OperatorTok{+}\StringTok{ }\FloatTok{0.45}
+\NormalTok{        MPF.BCT.p[row, }\DecValTok{16}\NormalTok{] <-}\StringTok{ }\NormalTok{MPF.BCT.p[row, }\DecValTok{16}\NormalTok{] }\OperatorTok{+}\StringTok{ }\FloatTok{0.15}
+\NormalTok{      \} }\ControlFlowTok{else}\NormalTok{ \{}
+\NormalTok{        MPF.BCT.p[row,] <-}\StringTok{ }\NormalTok{MPF.BCT.w.i[row,] }\OperatorTok{/}\StringTok{ }\NormalTok{MPF.BCT.w.sum }\OperatorTok{/}\StringTok{ }\DecValTok{10} \OperatorTok{*}\StringTok{ }\DecValTok{4}
+\NormalTok{        MPF.BCT.p[row, }\DecValTok{16}\NormalTok{] <-}\StringTok{ }\NormalTok{MPF.BCT.p[row, }\DecValTok{16}\NormalTok{] }\OperatorTok{+}\StringTok{ }\FloatTok{0.6}
+\NormalTok{      \}}
+\NormalTok{    \} }\ControlFlowTok{else}\NormalTok{ \{}
+\NormalTok{      MPF.BCT.p[row,] <-}\StringTok{ }\NormalTok{MPF.BCT.w.i[row,] }\OperatorTok{/}\StringTok{ }\NormalTok{MPF.BCT.w.sum}
+\NormalTok{    \} }
+
+\NormalTok{    MPF.portf.weight.all[row, ] <-}
+\StringTok{      }\KeywordTok{round_percent}\NormalTok{(MPF.BCT.p[row,])}
+
+\NormalTok{    portf.rebal.i <-}
+\StringTok{      }\KeywordTok{Return.portfolio}\NormalTok{(}
+\NormalTok{        MPF.BCT.returns,}
+        \DataTypeTok{weight =}\NormalTok{ MPF.portf.weight.all,}
+        \DataTypeTok{geometric =} \OtherTok{TRUE}\NormalTok{,}
+        \DataTypeTok{rebalance_on =} \StringTok{"months"}
+\NormalTok{      )}
+
+\NormalTok{    MPF.portf.return[row] <-}\StringTok{ }\KeywordTok{tail}\NormalTok{(}\KeywordTok{na.omit}\NormalTok{(portf.rebal.i), }\DecValTok{1}\NormalTok{)}
+\NormalTok{    MPF.portf.drawdown <-}\StringTok{ }\KeywordTok{Drawdowns}\NormalTok{(MPF.portf.return,}
+                                    \DataTypeTok{geometric =} \OtherTok{TRUE}\NormalTok{)}
+    \ControlFlowTok{if}\NormalTok{ (row }\OperatorTok{>}\StringTok{ }\DecValTok{12} \OperatorTok{&&}\StringTok{ }\KeywordTok{tail}\NormalTok{(}\KeywordTok{na.omit}\NormalTok{(MPF.portf.drawdown), }\DecValTok{1}\NormalTok{) }\OperatorTok{<}\StringTok{ }\FloatTok{-0.065} \OperatorTok{&&}
+\StringTok{        }\NormalTok{up }\OperatorTok{==}\StringTok{ }\OtherTok{FALSE}\NormalTok{) \{}
+\NormalTok{      hedge =}\StringTok{ }\OtherTok{TRUE}
+\NormalTok{    \}}
+\NormalTok{  \} }
+  \CommentTok{# SR.all[pass] <- Return.annualized(portf.rebal.i, geometric = TRUE) / (StdDev(portf.rebal.i) * sqrt(12))}
+\NormalTok{  SR <-}\StringTok{ }\KeywordTok{Return.annualized}\NormalTok{(portf.rebal.i, }\DataTypeTok{geometric =} \OtherTok{TRUE}\NormalTok{) }\OperatorTok{/}\StringTok{ }\NormalTok{(}\KeywordTok{StdDev}\NormalTok{(portf.rebal.i) }\OperatorTok{*}\StringTok{ }\KeywordTok{sqrt}\NormalTok{(}\DecValTok{12}\NormalTok{))}
+\NormalTok{  SR}
+\NormalTok{\}}
+
+\KeywordTok{registerDoSEQ}\NormalTok{()}
+\KeywordTok{stopCluster}\NormalTok{(cl)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{performance-analysis}{%
+\subsubsection{Performance Analysis}\label{performance-analysis}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{portf.rebal.fm <-}\StringTok{ }\KeywordTok{Return.portfolio}\NormalTok{(}
+\NormalTok{  MPF.BCT.returns,}
+  \DataTypeTok{weight =}\NormalTok{ MPF.portf.weight,}
+  \DataTypeTok{geometric =} \OtherTok{TRUE}\NormalTok{,}
+  \DataTypeTok{rebalance_on =} \StringTok{"months"}
+\NormalTok{)}
+\NormalTok{mean.annual.return <-}
+\StringTok{  }\KeywordTok{mean}\NormalTok{(}\KeywordTok{do.call}\NormalTok{(rbind, }\KeywordTok{lapply}\NormalTok{(}\KeywordTok{split}\NormalTok{(portf.rebal.fm, }\StringTok{"years"}\NormalTok{), }\ControlFlowTok{function}\NormalTok{(x)}
+    \KeywordTok{colMeans}\NormalTok{(x))) }\OperatorTok{*}\StringTok{ }\DecValTok{12}\NormalTok{)}
+\KeywordTok{charts.PerformanceSummary}\NormalTok{(}
+\NormalTok{  portf.rebal.fm,}
+  \DataTypeTok{methods =} \StringTok{"ModifiedES"}\NormalTok{,}
+  \DataTypeTok{geometric =} \OtherTok{TRUE}\NormalTok{,}
+  \DataTypeTok{p =} \FloatTok{.95}\NormalTok{,}
+  \DataTypeTok{main =} \StringTok{"BCT MPF Scheme First Contribution Performance"}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{F:/GitHub repo/MPF-ANN/docs/Results/MPF_BCT_civil_servant_TCN_v1_files/figure-latex/unnamed-chunk-10-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{portf.rebal.fm.sharpe <-}
+\StringTok{  }\KeywordTok{Return.annualized}\NormalTok{(portf.rebal.fm, }\DataTypeTok{geometric =} \OtherTok{TRUE}\NormalTok{) }\OperatorTok{/}\StringTok{ }\NormalTok{(}\KeywordTok{StdDev}\NormalTok{(portf.rebal.fm) }\OperatorTok{*}\StringTok{ }\KeywordTok{sqrt}\NormalTok{(}\DecValTok{12}\NormalTok{))}
+\NormalTok{portf.rebal.fm.mean.sharpe <-}
+\StringTok{  }\NormalTok{mean.annual.return }\OperatorTok{/}\StringTok{ }\NormalTok{(}\KeywordTok{StdDev}\NormalTok{(portf.rebal.fm) }\OperatorTok{*}\StringTok{ }\KeywordTok{sqrt}\NormalTok{(}\DecValTok{12}\NormalTok{))}
+\KeywordTok{rownames}\NormalTok{(portf.rebal.fm.sharpe) <-}\StringTok{ "Sharpe Ratio (annualized)"}
+\KeywordTok{rownames}\NormalTok{(portf.rebal.fm.mean.sharpe) <-}
+\StringTok{  "Sharpe Ratio (mean annual return)"}
+\KeywordTok{colnames}\NormalTok{(portf.rebal.fm.mean.sharpe) <-}\StringTok{ "portfolio.returns"}
+\KeywordTok{Return.annualized}\NormalTok{(portf.rebal.fm, }\DataTypeTok{geometric =} \OtherTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                   portfolio.returns
+## Annualized Return         0.1029425
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mean.annual.return}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.09931035
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{portf.rebal.fm.sharpe}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                           portfolio.returns
+## Sharpe Ratio (annualized)          1.279658
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{portf.rebal.fm.mean.sharpe}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                                   portfolio.returns
+## Sharpe Ratio (mean annual return)          1.234508
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{StdDev.annualized}\NormalTok{(portf.rebal.fm)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                               portfolio.returns
+## Annualized Standard Deviation        0.08044531
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{SortinoRatio}\NormalTok{(portf.rebal.fm)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                          portfolio.returns
+## Sortino Ratio (MAR = 0%)          0.746187
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ES}\NormalTok{(portf.rebal.fm, }\DataTypeTok{method =} \StringTok{"historical"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    portfolio.returns
+## ES       -0.04144657
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{tail}\NormalTok{(MPF.portf.weight, }\DataTypeTok{n =} \DecValTok{1}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##            MPF.BCT.AE MPF.BCT.CA MPF.BCT.CEHK MPF.BCT.CT MPF.BCT.EU MPF.BCT.E3 MPF.BCT.E5 MPF.BCT.E7 MPF.BCT.E9 MPF.BCT.FM MPF.BCT.GB MPF.BCT.GE MPF.BCT.GT
+## 2019-08-30          0          0            0          0          0          0          0          0          0          0       0.35          0          0
+##            MPF.BCT.HKB MPF.BCT.HSIT MPF.BCT.MPFC MPF.BCT.RMBB MPF.BCT.SFP MPF.BCT.SE2040
+## 2019-08-30           0            0         0.65            0           0              0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{### Deflated Sharpe Ratio}
+\NormalTok{SR_zero <-}
+\StringTok{  }\KeywordTok{sqrt}\NormalTok{((}\KeywordTok{StdDev}\NormalTok{(SR.all)) }\OperatorTok{^}\StringTok{ }\DecValTok{2} \OperatorTok{/}\StringTok{ }\DecValTok{12}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{((}\DecValTok{1} \OperatorTok{-}\StringTok{ }\FloatTok{0.57721}\NormalTok{) }\OperatorTok{*}\StringTok{ }\KeywordTok{qnorm}\NormalTok{(}\DecValTok{1} \OperatorTok{-}\StringTok{ }\DecValTok{1} \OperatorTok{/}\StringTok{ }\DecValTok{21}\NormalTok{) }\OperatorTok{+}
+\StringTok{                                       }\NormalTok{(}\FloatTok{0.57721}\NormalTok{) }\OperatorTok{*}\StringTok{ }\KeywordTok{qnorm}\NormalTok{(}\DecValTok{1} \OperatorTok{-}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{(}\DecValTok{21} \OperatorTok{*}\StringTok{ }\FloatTok{2.71828}\NormalTok{))))}
+\NormalTok{DSR <-}
+\StringTok{  }\KeywordTok{pnorm}\NormalTok{(((portf.rebal.fm.sharpe }\OperatorTok{/}\StringTok{ }\KeywordTok{sqrt}\NormalTok{(}\DecValTok{12}\NormalTok{) }\OperatorTok{-}\StringTok{ }\NormalTok{SR_zero) }\OperatorTok{*}\StringTok{ }\KeywordTok{sqrt}\NormalTok{(}\KeywordTok{length}\NormalTok{(MPF.BCT.returns[, }\DecValTok{1}\NormalTok{]))) }\OperatorTok{/}
+\StringTok{          }\KeywordTok{sqrt}\NormalTok{(}\DecValTok{1} \OperatorTok{-}\StringTok{ }\KeywordTok{skewness}\NormalTok{(portf.rebal.fm) }\OperatorTok{*}\StringTok{ }\NormalTok{portf.rebal.fm.sharpe }\OperatorTok{+}\StringTok{ }
+\StringTok{                 }\NormalTok{((}\KeywordTok{kurtosis}\NormalTok{(portf.rebal.fm) }\OperatorTok{-}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{/}\StringTok{ }\DecValTok{4}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{(portf.rebal.fm.sharpe) }\OperatorTok{^}\StringTok{ }\DecValTok{2}\NormalTok{)}
+\NormalTok{  )}
+
+\KeywordTok{rownames}\NormalTok{(DSR) <-}\StringTok{ "Deflated Sharpe Ratio"}
+\NormalTok{DSR}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                       portfolio.returns
+## Deflated Sharpe Ratio                 1
+\end{verbatim}
+
+\hypertarget{monthly-installment}{%
+\subsubsection{Monthly Installment}\label{monthly-installment}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{MPF.BCT.units <-}\StringTok{ }\NormalTok{MPF.BCT.returns}
+\NormalTok{MPF.BCT.units[, ] <-}\StringTok{ }\DecValTok{0}
+
+\NormalTok{MPF.monthly.asset <-}\StringTok{ }\NormalTok{MPF.BCT.returns}
+\NormalTok{MPF.monthly.asset[, ] <-}\StringTok{ }\DecValTok{0}
+
+\NormalTok{MPF.monthly.returns <-}
+\StringTok{  }\KeywordTok{as.xts}\NormalTok{(}\KeywordTok{rowSums}\NormalTok{(MPF.BCT.returns), }\DataTypeTok{order.by =}\NormalTok{ monthly)}
+\NormalTok{MPF.monthly.returns[] <-}\StringTok{ }\DecValTok{0}
+
+\NormalTok{MPF.time <-}\StringTok{ }\DecValTok{0}\OperatorTok{:}\KeywordTok{length}\NormalTok{(MPF.BCT.returns[, }\DecValTok{1}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\DecValTok{12}
+\NormalTok{MPF.pay <-}\StringTok{ }\DecValTok{-1500} \OperatorTok{+}\StringTok{ }\DecValTok{0} \OperatorTok{*}\StringTok{ }\NormalTok{MPF.time}
+
+\ControlFlowTok{for}\NormalTok{ (row }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\KeywordTok{length}\NormalTok{(MPF.BCT.returns[, }\DecValTok{1}\NormalTok{])) \{}
+\NormalTok{  this.price <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(MPF.BCT[monthly[row]])}
+\NormalTok{  MPF.BCT.units[row, ] <-}\StringTok{ }\NormalTok{this.price}
+  
+  \ControlFlowTok{if}\NormalTok{ (row }\OperatorTok{==}\StringTok{ }\DecValTok{1}\NormalTok{) \{}
+\NormalTok{    last.value <-}\StringTok{ }\DecValTok{1500}
+\NormalTok{    this.value <-}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{((}\DecValTok{1500} \OperatorTok{/}\StringTok{ }\NormalTok{MPF.BCT[}\DecValTok{1}\NormalTok{, }\DecValTok{16}\NormalTok{]) }\OperatorTok{*}\StringTok{ }\NormalTok{this.price[}\DecValTok{16}\NormalTok{])}
+\NormalTok{    MPF.monthly.returns[row] <-}\StringTok{ }\KeywordTok{log}\NormalTok{(this.value }\OperatorTok{/}\StringTok{ }\NormalTok{last.value)}
+\NormalTok{    MPF.monthly.asset[row,] <-}
+\StringTok{      }\NormalTok{(this.value }\OperatorTok{+}\StringTok{ }\DecValTok{1500}\NormalTok{) }\OperatorTok{/}\StringTok{ }\NormalTok{this.price }\OperatorTok{*}\StringTok{ }\NormalTok{MPF.portf.weight[row, ]}
+\NormalTok{    last.price <-}\StringTok{ }\NormalTok{this.price}
+\NormalTok{  \} }\ControlFlowTok{else}\NormalTok{ \{}
+\NormalTok{    last.value <-}
+\StringTok{      }\KeywordTok{as.numeric}\NormalTok{(}\KeywordTok{sum}\NormalTok{(}\KeywordTok{na.fill}\NormalTok{(last.price }\OperatorTok{*}\StringTok{ }\NormalTok{MPF.monthly.asset[row }\OperatorTok{-}\StringTok{ }\DecValTok{1}\NormalTok{, ], }\DecValTok{0}\NormalTok{)))}
+\NormalTok{    this.value <-}
+\StringTok{      }\KeywordTok{as.numeric}\NormalTok{(}\KeywordTok{sum}\NormalTok{(}\KeywordTok{na.fill}\NormalTok{(this.price }\OperatorTok{*}\StringTok{ }\NormalTok{MPF.monthly.asset[row }\OperatorTok{-}\StringTok{ }\DecValTok{1}\NormalTok{, ], }\DecValTok{0}\NormalTok{)))}
+\NormalTok{    MPF.monthly.returns[row] <-}\StringTok{ }\KeywordTok{log}\NormalTok{(this.value }\OperatorTok{/}\StringTok{ }\NormalTok{last.value)}
+\NormalTok{    MPF.monthly.asset[row,] <-}
+\StringTok{      }\NormalTok{(this.value }\OperatorTok{+}\StringTok{ }\DecValTok{1500}\NormalTok{) }\OperatorTok{/}\StringTok{ }\NormalTok{this.price }\OperatorTok{*}\StringTok{ }\NormalTok{MPF.portf.weight[row, ]}
+\NormalTok{    last.price <-}\StringTok{ }\NormalTok{this.price}
+\NormalTok{  \}}
+\NormalTok{\}}
+
+
+\NormalTok{total.asset.value <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(MPF.monthly.asset[row, ] }\OperatorTok{*}\StringTok{ }\NormalTok{this.price)}
+\NormalTok{total.contribution <-}\StringTok{ }\DecValTok{1500} \OperatorTok{*}\StringTok{ }\KeywordTok{length}\NormalTok{(MPF.BCT.returns[, }\DecValTok{1}\NormalTok{])}
+
+\NormalTok{MPF.pay[row }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{] <-}\StringTok{ }\NormalTok{total.asset.value}
+\NormalTok{IRR.f <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(r)}
+  \KeywordTok{sum}\NormalTok{(MPF.pay }\OperatorTok{*}\StringTok{ }\KeywordTok{exp}\NormalTok{(}\OperatorTok{-}\NormalTok{r }\OperatorTok{*}\StringTok{ }\NormalTok{MPF.time))}
+\NormalTok{IRR.root <-}\StringTok{ }\KeywordTok{uniroot}\NormalTok{(IRR.f, }\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{))}
+
+
+\NormalTok{total.asset.value}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 871187.4
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{total.contribution}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 337500
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mean.monthly.annual.return <-}
+\StringTok{  }\KeywordTok{mean}\NormalTok{(}\KeywordTok{do.call}\NormalTok{(rbind, }\KeywordTok{lapply}\NormalTok{(}\KeywordTok{split}\NormalTok{(MPF.monthly.returns, }\StringTok{"years"}\NormalTok{), }\ControlFlowTok{function}\NormalTok{(x)}
+    \KeywordTok{colMeans}\NormalTok{(x))) }\OperatorTok{*}\StringTok{ }\DecValTok{12}\NormalTok{)}
+\NormalTok{mean.monthly.annual.return}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.08704892
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{IRR.root}\OperatorTok{$}\NormalTok{root}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.08870753
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{stddev.monthly <-}\StringTok{ }\NormalTok{(}\KeywordTok{StdDev}\NormalTok{(MPF.monthly.returns) }\OperatorTok{*}\StringTok{ }\KeywordTok{sqrt}\NormalTok{(}\DecValTok{12}\NormalTok{))}
+\NormalTok{monthly.installment.sharpe.ratio <-}
+\StringTok{  }\NormalTok{mean.monthly.annual.return }\OperatorTok{/}\StringTok{ }\NormalTok{stddev.monthly}
+\KeywordTok{rownames}\NormalTok{(monthly.installment.sharpe.ratio) <-}
+\StringTok{  "Sharpe Ratio (mean annual return)"}
+\NormalTok{monthly.installment.sharpe.ratio}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                                       [,1]
+## Sharpe Ratio (mean annual return) 1.085536
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{StdDev.annualized}\NormalTok{(MPF.monthly.returns)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                                     [,1]
+## Annualized Standard Deviation 0.08018983
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ES}\NormalTok{(MPF.monthly.returns, }\DataTypeTok{method =} \StringTok{"historical"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##           [,1]
+## ES -0.04210941
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{SortinoRatio}\NormalTok{(MPF.monthly.returns)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                               [,1]
+## Sortino Ratio (MAR = 0%) 0.6735455
+\end{verbatim}
+
+\end{document}
