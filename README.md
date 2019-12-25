@@ -30,5 +30,4 @@ Preliminary result at [here](https://jchan-gi.github.io/MPF-ANN/index.html)!
 * 修訂版BSD許可證 (詳見[LICENSE檔案](https://github.com/jchan-gi/MPF-ANN/blob/master/LICENSE)，只有英文版本)
 
 # Work pending for update in 2020:
-* Walk-forwalk validation for BCT LSTM v8. Afterwards extend v8 to all listed MPF scheme in this repo.
-* Attention mechanism for better prediction.
+* Temporal Convolution Network (TCN) mechanism for better prediction.
