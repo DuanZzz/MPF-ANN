@@ -1,3 +1,6 @@
+# The ANN Strategy will merged with n-m MA BIAS in MPF-Technical-Analysis very soon for further improving sharpe ratio.
+# 本程式即將加入強積金-技術分析中的時差平均乖離值指標以提升本策略的夏普比率
+
 # MPF-ANN
 ### 利用人工類神經網絡提升強積金回報波幅的策略試驗
 Do you believe you can boost your MPF with [Sharpe Ratio](https://www.investopedia.com/terms/s/sharperatio.asp) near 1?   
@@ -31,3 +34,4 @@ Preliminary result at [here](https://jchan-gi.github.io/MPF-ANN/index.html)!
 
 # Work pending for update in 2020:
 * Temporal Convolution Network (TCN) mechanism for better prediction.
+* Include MPF-Technical-Analysis indicator (n-m MA BIAS)
